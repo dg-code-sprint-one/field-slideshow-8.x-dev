@@ -246,15 +246,19 @@ class FieldSlideshow extends ImageFormatter {
         // Get image style URL
         if ($image_style) {
           $image_uri = ImageStyle::load($image_style->getName())->buildUrl($image_uri);
-        } else {
+        } 
+        else {
           // Get absolute path for original image
           $image_uri = $item->entity->url();
         }
-        $elements[$delta] = array(
-          '#markup' => $image_uri,
-        );
+        $image_element[$delta] = $image_uri;
+        
       }
     }
+    $elements[$delta] = array(
+      '#theme' => 'field_slideshow',
+      '#items' => $image_element,
+    );
     return $elements;
   }
 }

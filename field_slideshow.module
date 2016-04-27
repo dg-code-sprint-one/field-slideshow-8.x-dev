@@ -1,0 +1,53 @@
+<?php
+
+/**
+ * @file
+ *  Preprocess and theme hook functions.
+ */
+
+
+/**
+ * Implements hook_theme().
+ */
+function field_slideshow_theme() {
+  return array(
+    'field_slideshow' => array(
+      'variables'     => array(
+        'items'                 => NULL,
+        'image_style'           => NULL,
+        'order'                 => NULL,
+        'controls'              => NULL,
+        'controls_pause'        => NULL,
+        'controls_position'     => NULL,
+        'pager'                 => NULL,
+        'pager_position'        => NULL,
+        'pager_image_style'     => NULL,
+        'carousel_image_style'  => NULL,
+        'entity'                => NULL,
+        'breakpoints'           => NULL,
+        'slideshow_id'          => NULL,
+        'js_variables'          => array(),
+      ),
+      'path' => drupal_get_path('module', 'field_slideshow') . '/templates',
+      'render element'     => 'field_slideshow',
+    ),
+    // 'field_slideshow_controls' => array(
+    //   'variables'    => array(
+    //     'slideshow_id'          => NULL,
+    //     'controls_pause'        => NULL,
+    //   ),
+    //   'template'     => 'field_slideshow_controls',
+    // ),
+    // 'field_slideshow_pager' => array(
+    //   'variables'    => array(
+    //     'items'                 => NULL,
+    //     'pager'                 => NULL,
+    //     'pager_image_style'     => NULL,
+    //     'carousel_image_style'  => NULL,
+    //     'slideshow_id'          => NULL,
+    //     'carousel_skin'         => NULL,
+    //   ),
+    //   'template'     => 'field_slideshow_pager',
+    // ),
+  );
+}

@@ -1,0 +1,32 @@
+field_slideshow.jquery.cycle:
+  version: VERSION
+  js:
+    /libraries/jquery.cycle/jquery.cycle.all.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/jquery.once
+    - core/drupalSettings
+
+field_slideshow.jquery.carousel:
+  version: VERSION
+  js:
+    /libraries/jquery.jcarousel/lib/jquery.jcarousel.min.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/jquery.once
+    - core/drupalSettings
+
+field_slideshow.view:
+  version: VERSION
+  css:
+    theme:
+      css/field_slideshow.css: {}
+  js:
+    js/field_slideshow.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/jquery.once
+    - core/drupalSettings
