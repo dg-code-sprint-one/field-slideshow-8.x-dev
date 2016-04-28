@@ -1,1 +1,28 @@
-<div>Field slideshow pager</div>
+{#
+/**
+ * @file
+ * Template file for field_slideshow_pager
+ *
+ *
+ */#}
+{% if pager == 'number'  %}
+
+  <div id="field-slideshow-{{ slideshow_id }}-pager" class="field-slideshow-pager slides-{# PHP: print count($items); #}"></div>
+
+{% elseif pager == 'image' or pager == 'carousel'  %}
+
+  {% if pager == 'carousel'  %}
+    <div id="field-slideshow-{{ slideshow_id }}-carousel-wrapper" class="field-slideshow-carousel-wrapper{# PHP: print ($pager == 'carousel' && $carousel_skin) ? " jcarousel-skin-" . $carousel_skin : ""; #}">
+      {% if not carousel_skin  %}<a href="#" class="carousel-prev">«</a>{% endif %}
+      <div id="field-slideshow-{{ slideshow_id }}-carousel" class="field-slideshow-carousel">
+  {% endif %}
+
+  {{ thumbnails }}
+
+  {% if pager == 'carousel'  %}
+      </div>
+      {% if not carousel_skin  %}<a href="#" class="carousel-next">»</a>{% endif %}
+    </div>
+  {% endif %}
+
+{% endif %}

@@ -1,2 +1,15 @@
-
-<div>Field slideshow controls</div>
+{#
+/**
+ * @file
+ * Template file for field_slideshow_controls
+ *
+ *
+ */#}
+<div id="field-slideshow-{{ slideshow_id }}-controls" class="field-slideshow-controls">
+  <a href="#" class="prev">{{ 'Prev'|t }}</a>
+  {% if controls_pause is not empty %}
+    <a href="#" class="play">{{ 'Play'|t }}</a>
+    <a href="#" class="pause">{{ 'Pause'|t }}</a>
+  {% endif %}
+  <a href="#" class="next">{{ 'Next'|t }}</a>
+</div>
