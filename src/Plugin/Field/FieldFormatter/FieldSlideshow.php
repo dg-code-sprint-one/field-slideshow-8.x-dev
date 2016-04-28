@@ -12,6 +12,7 @@ use Drupal\image\Entity\ImageStyle;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use \InvalidArgumentException;
+use Drupal\Core\Url;
 
 /**
  * Plugin implementation of the 'slideshow' formatter.
@@ -242,7 +243,7 @@ class FieldSlideshow extends ImageFormatter {
     unset($image_styles['']);
     // Styles could be lost because of enabled/disabled modules that defines
     // their styles in code.
-    $image_style_setting = $this->getSetting('image_style');
+    $image_style_setting = $this->getSetting('slideshow_image_style');
     if (isset($image_styles[$image_style_setting])) {
       $summary[] = t('Image style: @style', array('@style' => $image_styles[$image_style_setting]));
     }
@@ -325,32 +326,71 @@ class FieldSlideshow extends ImageFormatter {
  public function viewElements(FieldItemListInterface $items, $langcode) {
     static $slideshow_count;
     $slideshow_count = (is_int($slideshow_count)) ? $slideshow_count + 1 : 1;
+    $files = $this->getEntitiesToView($items, $langcode);
 
-    $elements = array();
-    $image_style_setting = $this->getSetting('image_style');
-
-    // Determine if Image style is required.
-    $image_style = NULL;
-    if (!empty($image_style_setting)) {
-      $image_style = entity_load('image_style', $image_style_setting);
-    }
-    
-    foreach ($items as $delta => $item) {
-      
-      if ($item->entity) {
-        $image_uri = $item->entity->getFileUri();
-        // Get image style URL
-        if ($image_style) {
-          $image_uri = ImageStyle::load($image_style->getName())->buildUrl($image_uri);
-        } 
-        else {
-          // Get absolute path for original image
-          $image_uri = $item->entity->url();
-        }
-        $image_element[$delta] = $image_uri;
-        
+    // Check plugins
+    if (\Drupal::moduleHandler()->moduleExists('libraries')) {
+      //$path = libraries_get_path('/libraries/jquery.cycle');
+      if (!file_exists(DRUPAL_ROOT . '/libraries/jquery.cycle/jquery.cycle.all.min.js') && !file_exists(DRUPAL_ROOT . '/libraries/jquery.cycle/jquery.cycle.all.js')) {
+        $url = Url::fromRoute('system.status');
+        drupal_set_message(t('JQuery Cycle must be installed in order to run the slideshow. Please go to !page for instructions.', array('!page' => \Drupal::l(t('Status Report'), $url))), 'warning', FALSE);
       }
     }
+    else {
+      $url = Url::fromUri('http://drupal.org/project/libraries');
+      drupal_set_message(t('Please install the !module module in order to use Field Slideshow.', array('!module' => \Drupal::l('Libraries API', $url))), 'warning', FALSE);
+    }
+
+    $elements = array();
+
+    // Get correct caption
+    $item_settings = array();
+    if ($this->getSetting('slideshow_caption') != '') {
+      foreach ($items as $delta => $item) {
+        $item_settings['caption'] = $this->getSetting('slideshow_caption');
+      }
+    }
+
+    $links = array(
+      'slideshow_link'          => 'path',
+      'slideshow_caption_link'  => 'caption_path',
+    );
+
+     // Loop through required links (because image and caption can have different links).
+    foreach ($links as $setting => $path) {
+      // Check if the formatter involves a link.
+      $link_type = '';
+      switch ($this->getSetting($setting)) {
+        case 'content':
+          $link_type = 'content';
+        break;
+        case 'file':
+          $link_type = 'file';
+        case 'colorbox':
+          $link_type = 'file';
+        break;
+      }
+      foreach ($item_settings as $delta => $item) {
+        $uri = array();
+        switch ($link_type) {
+          case 'content':
+            $entity = $items->getEntity();
+            if (!$entity->isNew()) {
+              $uri = $entity->urlInfo();
+            }
+          break;
+          case 'file':
+            foreach ($files as $file_delta => $file) {
+              if (isset($link_type)) {
+                $image_uri = $file->getFileUri();
+                $uri = Url::fromUri(file_create_url($image_uri));
+              }
+            }
+        }
+        $item_settings[$path] = !empty($uri) ? $uri : '';
+      }
+    }
+    
     $pager = array(
       '#theme'                => 'field_slideshow_pager',
       '#items'                => $items,
@@ -374,7 +414,7 @@ class FieldSlideshow extends ImageFormatter {
       '#controls_position'    => $this->getSetting('slideshow_controls_position'),
       '#pager'                => $this->getSetting('slideshow_pager') !== '' ? $pager : array(),
       '#pager_position'       => $this->getSetting('slideshow_pager_position'),
-      '#entity'               => array(),
+      '#entity'               => $entity,
       '#slideshow_id'         => $slideshow_count,
       '#js_variables'         => array(
         'fx'                   => $this->getSetting('slideshow_fx'),

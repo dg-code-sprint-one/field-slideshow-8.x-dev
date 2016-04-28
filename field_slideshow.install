@@ -16,7 +16,7 @@ function field_slideshow_requirements($phase) {
 	if ($phase == 'runtime') {
 		//$path = libraries_get_path('jquery.cycle');
     $path = '';
-    if ($path == '') $path = '/libraries/jquery.cycle';
+    if ($path == '') $path = DRUPAL_ROOT . '/libraries/jquery.cycle';
     if (file_exists($path . '/jquery.cycle.all.min.js') || file_exists($path . '/jquery.cycle.all.js')) {
       $requirements['field_slideshow_cycle_plugin'] = array(
         'title'     => t('JQuery Cycle plugin'),
@@ -52,7 +52,7 @@ function field_slideshow_requirements($phase) {
 	if ($carousel_used) {
       $path = '';
       //$path = libraries_get_path('jquery.jcarousel');
-      if ($path == '') $path = '/libraries/jquery.jcarousel';
+      if ($path == '') $path = DRUPAL_ROOT . '/libraries/jquery.jcarousel';
       if (file_exists($path . '/lib/jquery.jcarousel.min.js') || file_exists($path . '/lib/jquery.jcarousel.js')) {
         $requirements['field_slideshow_jcarousel_plugin'] = array(
           'title'     => t('JCarousel plugin'),
@@ -72,7 +72,7 @@ function field_slideshow_requirements($phase) {
     }
     $path = '';
     //$path = libraries_get_path('jquery.imagesloaded');
-    if ($path == '') $path = '/libraries/jquery.imagesloaded';
+    if ($path == '') $path = DRUPAL_ROOT . '/libraries/jquery.imagesloaded';
     if (file_exists($path . '/jquery.imagesloaded.min.js') || file_exists($path . '/jquery.imagesloaded.js')) {
       $requirements['field_slideshow_imagesloaded_plugin'] = array(
         'title'     => t('JQuery ImagesLoaded plugin'),
