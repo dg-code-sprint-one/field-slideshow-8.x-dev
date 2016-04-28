@@ -1,4 +1,31 @@
 {{ attach_library('field_slideshow/field_slideshow.view') }}
 <div>Hello world</div>
+{% 
+  set classes = [
+    'field-slideshow-' ~ slideshow_id,
+    'effect-' ~ js_variables.fx,
+    'timeout-' ~ js_variables.timeout,
+    pager is defined and pager != '' ? 'with-pager'
+  ]
+%}
+{% if controls_position is not defined %}
+  {% set controls_position = "after" %}
+{% endif %}
 
-  
+{% if pager_position is not defined %}
+  {% set pager_position = "after" %}
+{% endif %}
+
+<div id="field-slideshow-{{ slideshow_id }}-wrapper" class="field-slideshow-wrapper">
+  {% if controls_position == 'before' %}
+    {{ controls }}
+  {% endif %}
+  {% if pager_position == 'before' %}
+    {{ pager }}
+  {% endif %}
+  {% if breakpoints is defined and breakpoints.mapping is defined and breakpoints.mapping is not empty %}
+    {% set style = 'height:' ~ slides_max_height ~ 'px' %}
+  {% else %}
+    {% set style = 'width:' ~ slides_max_width ~ 'px; height:' ~ slides_max_height ~ 'px' %}
+  {% endif %}
+</div>
