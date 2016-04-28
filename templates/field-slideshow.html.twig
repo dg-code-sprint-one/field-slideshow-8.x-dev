@@ -24,8 +24,23 @@
     {{ pager }}
   {% endif %}
   {% if breakpoints is defined and breakpoints.mapping is defined and breakpoints.mapping is not empty %}
-    {% set style = 'height:' ~ slides_max_height ~ 'px' %}
+    {% set style = 'height:100px' %}
   {% else %}
-    {% set style = 'width:' ~ slides_max_width ~ 'px; height:' ~ slides_max_height ~ 'px' %}
+    {% set style = 'width:100px; height:100px' %}
   {% endif %}
+  <div{{ attributes.addClass(classes).setAttribute('style', style) }}>
+    {% for num,item in items %}
+      {{ num }}
+      {%
+        set classes = [
+          'field-slideshow-slide', 
+          'field-slideshow-slide-' ~ (1+num)
+        ]
+      %}
+      {% set style = (num) ? 'display:none' %}
+      <div classes="field-slideshow-slide field-slideshow-slide-{{1+num}} {{slide[num]['classes']}}" style="{{style}}">
+        
+      </div>
+    {% endfor %}
+  </div>
 </div>
