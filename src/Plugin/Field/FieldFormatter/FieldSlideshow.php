@@ -355,7 +355,7 @@ class FieldSlideshow extends ImageFormatter {
       'slideshow_link'          => 'path',
       'slideshow_caption_link'  => 'caption_path',
     );
-
+    $entity = array();
      // Loop through required links (because image and caption can have different links).
     foreach ($links as $setting => $path) {
       // Check if the formatter involves a link.
@@ -405,7 +405,7 @@ class FieldSlideshow extends ImageFormatter {
       '#slideshow_id'         => $slideshow_count,
       '#controls_pause'       => $this->getSetting('slideshow_controls_pause'),
     );   
-    $elements[$delta] = array(
+    $elements[] = array(
       '#theme'                => 'field_slideshow',
       '#items'                => $items,
       '#image_style'          => $this->getSetting('slideshow_image_style'),
