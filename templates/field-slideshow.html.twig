@@ -1,11 +1,11 @@
 {{ attach_library('field_slideshow/field_slideshow.view') }}
-<div>Hello world</div>
 {% 
   set classes = [
     'field-slideshow-' ~ slideshow_id,
     'effect-' ~ js_variables.fx,
     'timeout-' ~ js_variables.timeout,
-    pager is defined and pager != '' ? 'with-pager'
+    pager is defined and pager != '' ? 'with-pager',
+    controls is defined and controls != '' ? 'with-controls'
   ]
 %}
 {% if controls_position is not defined %}
@@ -26,20 +26,33 @@
   {% if breakpoints is defined and breakpoints.mapping is defined and breakpoints.mapping is not empty %}
     {% set style = 'height:100px' %}
   {% else %}
-    {% set style = 'width:100px; height:100px' %}
+    {% set style = 'width:100%; height:100%' %}
   {% endif %}
   <div{{ attributes.addClass(classes).setAttribute('style', style) }}>
     {% for num,item in items %}
-      {{ num }}
       {%
         set classes = [
           'field-slideshow-slide', 
           'field-slideshow-slide-' ~ (1+num)
         ]
       %}
-      {% set style = (num) ? 'display:none' %}
+      {% set style = (num) ? 'display:block' %}
+
       <div classes="field-slideshow-slide field-slideshow-slide-{{1+num}} {{slide[num]['classes']}}" style="{{style}}">
-        
+       
+
+        {#{% if url %}
+          <a href="{{ url }}">{{ image }}</a>
+        {% else %}
+          {{ image }}
+        {% endif %}
+        {% if item_settings[num]['caption'] is defined and item_settings[num]['caption'] is not empty %}
+          <div class="field-slideshow-caption">
+            <span class="field-slideshow-caption-text">
+              
+            </span>
+          </div>
+        {% endif %} #}
       </div>
     {% endfor %}
   </div>

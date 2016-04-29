@@ -342,12 +342,18 @@ class FieldSlideshow extends ImageFormatter {
     }
 
     $elements = array();
+    $entity = array();
 
     // Get correct caption
     $item_settings = array();
     if ($this->getSetting('slideshow_caption') != '') {
       foreach ($items as $delta => $item) {
-        $item_settings['caption'] = $this->getSetting('slideshow_caption');
+        $caption_settings = $this->getSetting('slideshow_caption');
+        if ($caption_settings == 'title') {
+          $item_settings[$delta]['caption'] = $item->getValue()['title'];
+        } elseif ($caption_settings == 'alt') {
+          $item_settings[$delta]['caption'] = $item->getValue()['alt'];
+        }
       }
     }
 
@@ -355,7 +361,7 @@ class FieldSlideshow extends ImageFormatter {
       'slideshow_link'          => 'path',
       'slideshow_caption_link'  => 'caption_path',
     );
-    $entity = array();
+
      // Loop through required links (because image and caption can have different links).
     foreach ($links as $setting => $path) {
       // Check if the formatter involves a link.
@@ -370,11 +376,11 @@ class FieldSlideshow extends ImageFormatter {
           $link_type = 'file';
         break;
       }
-      foreach ($item_settings as $delta => $item) {
+      foreach ($items as $delta => $item) {
         $uri = array();
         switch ($link_type) {
           case 'content':
-            $entity = $items->getEntity();
+            $entity = $item->getEntity();
             if (!$entity->isNew()) {
               $uri = $entity->urlInfo();
             }
@@ -385,15 +391,17 @@ class FieldSlideshow extends ImageFormatter {
                 $image_uri = $file->getFileUri();
                 $uri = Url::fromUri(file_create_url($image_uri));
               }
+              $item_settings[$file_delta][$path] = !empty($uri) ? $uri : '';
             }
         }
-        $item_settings[$path] = !empty($uri) ? $uri : '';
+        $item_settings[$delta][$path] = !empty($uri) ? $uri : '';
       }
     }
-    
+
     $pager = array(
       '#theme'                => 'field_slideshow_pager',
       '#items'                => $items,
+      '#item_settings'        => $item_settings,
       '#pager'                => $this->getSetting('slideshow_pager'),
       '#pager_image_style'    => $this->getSetting('slideshow_pager_image_style'),
       //'#carousel_image_style' => $this->getSetting('slideshow_carousel_image_style'),
@@ -408,6 +416,7 @@ class FieldSlideshow extends ImageFormatter {
     $elements[] = array(
       '#theme'                => 'field_slideshow',
       '#items'                => $items,
+      '#item_settings'        => $item_settings,
       '#image_style'          => $this->getSetting('slideshow_image_style'),
       '#order'                => $this->getSetting('slideshow_order'),
       '#controls'             => $this->getSetting('slideshow_controls') === 1 ? $controls : array(),

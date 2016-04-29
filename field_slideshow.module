@@ -5,6 +5,8 @@
  *  Preprocess and theme hook functions.
  */
 
+use Drupal\Component\Utility\Unicode;
+use Drupal\Core\Render\Element;
 
 /**
  * Implements hook_theme().
@@ -14,6 +16,7 @@ function field_slideshow_theme() {
     'field_slideshow' => array(
       'variables'     => array(
         'items'                 => NULL,
+        'item_settings'         => array(),
         'image_style'           => NULL,
         'image'                 => NULL,
         'order'                 => NULL,
@@ -59,8 +62,59 @@ function field_slideshow_theme() {
  * Implements template_preprocess().
  */
 function template_preprocess_field_slideshow(&$variables) {
+
+  if ($variables['image_style']) {
+    $variables['image'] = array(
+      '#theme' => 'image_style',
+      '#style_name' => $variables['image_style'],
+    );
+  }
+  else {
+    $variables['image'] = array(
+      '#theme' => 'image',
+    );
+  }
+  $variables['image']['#attributes'] = $variables['item_attributes'];
+
+  $item = $variables['items'];
+
+
+  foreach ($variables['items'] as $key => $value) {
+    if (Unicode::strlen($value->title) != 0) {
+      $variables['image'][$key]['#title'] = $value->title;
+    }
+    if (($entity = $value->entity) && empty($value->uri)) {
+      $variables['image'][$key]['#uri'] = $entity->getFileUri();
+    }
+    else {
+      $variables['image'][$key]['#uri'] = '';
+    }
+    foreach ($variables['item_settings'] as $item_key => $item_val) {
+      if($item_val['path'] == '') {
+       $variables['url'][$item_key]['path'] = '';
+      } elseif ($item_val['path']->isExternal() == TRUE) {
+        $variables['url'][$item_key]['path'] = $item_val['path']->getUri();
+      } elseif ($item_val['path']->isExternal() == FALSE) {
+        $variables['url'][$item_key]['path'] = $item_val['path']->getOptions()['entity']->url();
+      }
+
+      if($item_val['caption_path'] == '') {
+       $variables['caption_url'][$item_key]['path'] = '';
+      } elseif ($item_val['caption_path']->isExternal() == TRUE) {
+        $variables['caption_url'][$item_key]['path'] = $item_val['caption_path']->getUri();
+      } elseif ($item_val['caption_path']->isExternal() == FALSE) {
+        $variables['caption_url'][$item_key]['path'] = $item_val['caption_path']->getOptions()['entity']->url();
+      }
+    }
+  }
+
+  foreach (array('width', 'height', 'alt') as $key) {
+    $variables['image']["#$key"] = $item->$key;
+  }
+
+
   // Add js variables
-  // $js_variables = $variables["js_variables"];
+   //$js_variables = $variables["js_variables"];
 
   // drupal_add_js(array('field_slideshow' => array('field-slideshow-' . $variables['slideshow_id'] => $js_variables)), 'setting');
 
