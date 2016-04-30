@@ -66,22 +66,26 @@ function template_preprocess_field_slideshow(&$variables) {
 
   $item = $variables['items'];
 
-
+  // Loop over items and prepare links.
   foreach ($variables['items'] as $key => $value) {
     foreach ($variables['item_settings'] as $item_key => $item_val) {
-      if($item_val['path'] == '') {
+      if ($item_val['path'] == '') {
        $variables['url'][$item_key]['path'] = '';
-      } elseif ($item_val['path']->isExternal() == TRUE) {
+      } 
+      elseif ($item_val['path']->isExternal() == TRUE) {
         $variables['url'][$item_key]['path'] = $item_val['path']->getUri();
-      } elseif ($item_val['path']->isExternal() == FALSE) {
+      } 
+      elseif ($item_val['path']->isExternal() == FALSE) {
         $variables['url'][$item_key]['path'] = $item_val['path']->getOptions()['entity']->url();
       }
 
       if($item_val['caption_path'] == '') {
-       $variables['caption_url'][$item_key]['path'] = '';
-      } elseif ($item_val['caption_path']->isExternal() == TRUE) {
+        $variables['caption_url'][$item_key]['path'] = '';
+      } 
+      elseif ($item_val['caption_path']->isExternal() == TRUE) {
         $variables['caption_url'][$item_key]['path'] = $item_val['caption_path']->getUri();
-      } elseif ($item_val['caption_path']->isExternal() == FALSE) {
+      } 
+      elseif ($item_val['caption_path']->isExternal() == FALSE) {
         $variables['caption_url'][$item_key]['path'] = $item_val['caption_path']->getOptions()['entity']->url();
       }
     }
@@ -136,85 +140,6 @@ function template_preprocess_field_slideshow(&$variables) {
     if ($num == 0) $classes[] = 'first';
     elseif ($num == count($variables['items']) - 1) $classes[] = 'last';
     $variables['slide'][$num]['classes'] = implode(' ', $classes);
-
-
-    //$variables['image_render'][$num] = $variables['']
-    //print_r($item->getValue());exit;
-
-
-    // // Generate the image html
-    // $image = array();
-    // $image['path'] = $item['uri'];
-    // $image['attributes']['class'] = array('field-slideshow-image', 'field-slideshow-image-' . (1+$num));
-    // $image['alt'] = isset($item['alt']) ? $item['alt'] : '';
-    // if (isset($item['width']) && isset($item['height'])) {
-    //   $image['width'] = $item['width'];
-    //   $image['height'] = $item['height'];
-    // }
-    // else {
-    //   $image_dims = getimagesize($image['path']);
-    //   $image['width'] = $image_dims[0];
-    //   $image['height'] = $image_dims[1];
-    // }
-    // if (isset($item['title']) && drupal_strlen($item['title']) > 0) $image['title'] = $item['title'];
-    // if (isset($variables['image_style']) && $variables['image_style'] != '') {
-    //   $image['style_name'] = $variables['image_style'];
-    //   $image['breakpoints'] = $variables['breakpoints'];
-    //   $variables['items'][$num]['image'] = theme($slide_theme, $image);
-    // }
-    // else {
-    //   $variables['items'][$num]['image'] = theme('image', $image);
-    // }
-
-    // // Get image sizes and keeps the bigger ones, so height is correctly calculated by Cycle
-    // $dimensions = array(
-    //   'width' => $image['width'],
-    //   'height' => $image['height'],
-    // );
-    // if (isset($variables['image_style']) && $variables['image_style'] != '') {
-    //   if (function_exists('image_style_transform_dimensions')) {
-    //     image_style_transform_dimensions($image['style_name'], $dimensions);
-    //   }
-    //   // manual calculation if Drupal < 7.9 or image_style_transform_dimensions doesn't work
-    //   if (!function_exists('image_style_transform_dimensions') || !is_numeric($dimensions['width'])) {
-    //     $thumbnail_path = image_style_path($variables['image_style'], $image['path']);
-    //     // if thumbnail is not generated, do it, so we can get the dimensions
-    //     if (!file_exists($thumbnail_path)) {
-    //       image_style_create_derivative(image_style_load($variables['image_style']), $image['path'], $thumbnail_path);
-    //     }
-    //     $thumbnail_dims = getimagesize($thumbnail_path);
-    //     $dimensions = array(
-    //       'width' => $thumbnail_dims[0],
-    //       'height' => $thumbnail_dims[1],
-    //     );
-    //   }
-    // }
-
-  // // If the theme function hasn't added width and height attributes to the image, add them
-  // if (strpos($variables['items'][$num]['image'], 'width=') === FALSE) {
-  //   $variables['items'][$num]['image'] = drupal_substr($variables['items'][$num]['image'], 0, -2) . "width=\"$dimensions[width]\" height=\"$dimensions[height]\" />";
-  // }
-
-  // // Keeps biggest dimensions
-  // if ($dimensions['width'] > $variables['slides_max_width']) $variables['slides_max_width'] = $dimensions['width'];
-  // if ($dimensions['height'] > $variables['slides_max_height']) $variables['slides_max_height'] = $dimensions['height'];
-
-    // // Add links if needed
-    // $links = array('path' => 'image');
-    // if (isset($item['caption']) && $item['caption'] != '') $links['caption_path'] = 'caption';
-    // // Loop thru required links (because image and caption can have different links)
-    // foreach ($links as $link => $out) {
-    //   if (!empty($item[$link])) {
-    //     $path = $item[$link]['path'];
-    //     $options = $item[$link]['options'];
-    //     // When displaying an image inside a link, the html option must be TRUE.
-    //     $options['html'] = TRUE;
-    //     // Generate differnet rel attribute for image and caption, so colorbox doesn't double the image list
-    //     if (isset($options['attributes']['rel'])) $options['attributes']['rel'] .= $out;
-    //     $options = array_merge($options, drupal_parse_url($path));
-    //     $variables['items'][$num][$out] = l($variables['items'][$num][$out], $options['path'], $options);
-    //   }
-    // }
   }
 
   // Don't add controls if there's only one image
@@ -246,6 +171,7 @@ function template_preprocess_field_slideshow_pager(&$variables) {
     $thumbnails = array();
     foreach ($variables['items'] as $num => $item) {
       $thumbnail = array();
+
       $thumbnail['path'] = $item->entity->getFileUri();
       $thumbnail['attributes'] = $item->_attributes;
       $thumbnail['attributes']['class'] = array(
@@ -265,36 +191,19 @@ function template_preprocess_field_slideshow_pager(&$variables) {
       if (isset($item->title) && strlen($item->title) > 0) {
         $thumbnail['title'] = $item->title;
       }
+      // @todo: need to add cache tags in image.
+      $thumbnail_output = array(
+        '#theme'           => 'image_formatter',
+        '#item'            => $item,
+        '#item_attributes' => $thumbnail['attributes'],
+        '#url'             => "#",
+      );
       if ($thumbnail_style) {
-        $thumbnail['style_name'] = $thumbnail_style;
-        //$thumbnail_output = theme('image_style', $thumbnail);
-        $thumbnail_output = array(
-          '#theme'      => 'image_style',
-          '#style_name' => $thumbnail_style,
-          '#uri'        => $thumbnail['path'],
-          '#width'      => $thumbnail['width'],
-          '#height'     => $thumbnail['height'],
-          '#alt'        => $thumbnail['alt'],
-          '#attributes' => $thumbnail['attributes'],
-        );
+        $thumbnail_output['#image_style'] = $thumbnail_style;
       }
-      else {
-        //$thumbnail_output = theme('image', $thumbnail);
-        $thumbnail_output = array(
-          '#theme'           => 'image_formatter',
-          '#item'            => $item,
-          '#item_attributes' => $thumbnail['attributes'],
-          '#url'             => $thumbnail['path'],
-          'image_style'      => $thumbnail_style,
-        );
-      }
-      // get image html.
-      $render_image = \Drupal::service('renderer')->render($thumbnail_output);
-
-      //$thumbnails[] = '<a href="#">' . $render_image . '</a>';
+      
       $thumbnails[] = $thumbnail_output;
     }
-
 
     $variables['thumbnails'] = array(
       '#theme'      => 'item_list',

@@ -60,8 +60,10 @@ class FieldSlideshow extends ImageFormatter {
    * {@inheritdoc}
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
-  	
+
+  	// get image_style and image_link form elements from parent method.
     $element = parent::settingsForm($form, $form_state);
+
     $link_types = array(
       'content' => t('Content'),
       'file' => t('File'),
@@ -223,6 +225,8 @@ class FieldSlideshow extends ImageFormatter {
    * {@inheritdoc}
    */
   public function settingsSummary() {
+
+    // get summary of image_style and image_link from parent method.
     $summary = parent::settingsSummary();
 
     $caption_types = array(
@@ -282,8 +286,9 @@ class FieldSlideshow extends ImageFormatter {
   /**
    * {@inheritdoc}
    */
- public function viewElements(FieldItemListInterface $items, $langcode) {
-  //print_r($items);exit;
+  public function viewElements(FieldItemListInterface $items, $langcode) {
+
+    // get image html from parent method.
     $images = parent::viewElements($items, $langcode);
     
     static $slideshow_count;
@@ -292,7 +297,6 @@ class FieldSlideshow extends ImageFormatter {
 
     // Check plugins
     if (\Drupal::moduleHandler()->moduleExists('libraries')) {
-      //$path = libraries_get_path('/libraries/jquery.cycle');
       if (!file_exists(DRUPAL_ROOT . '/libraries/jquery.cycle/jquery.cycle.all.min.js') && !file_exists(DRUPAL_ROOT . '/libraries/jquery.cycle/jquery.cycle.all.js')) {
         $url = Url::fromRoute('system.status');
         drupal_set_message(t('JQuery Cycle must be installed in order to run the slideshow. Please go to !page for instructions.', array('!page' => \Drupal::l(t('Status Report'), $url))), 'warning', FALSE);
@@ -324,7 +328,7 @@ class FieldSlideshow extends ImageFormatter {
       'slideshow_caption_link'  => 'caption_path',
     );
 
-     // Loop through required links (because image and caption can have different links).
+    // Loop through required links (because image and caption can have different links).
     foreach ($links as $setting => $path) {
       // Check if the formatter involves a link.
       $link_type = '';
@@ -357,7 +361,6 @@ class FieldSlideshow extends ImageFormatter {
             }
         }
         $item_settings[$delta][$path] = !empty($uri) ? $uri : '';
-        //debug($item_settings[$delta][$path]);
       }
     }
 
@@ -376,7 +379,7 @@ class FieldSlideshow extends ImageFormatter {
       '#slideshow_id'         => $slideshow_count,
       '#controls_pause'       => $this->getSetting('slideshow_controls_pause'),
     );   
-    //debug($this->getSetting('slideshow_controls'));
+    
     $elements[] = array(
       '#theme'                => 'field_slideshow',
       '#items'                => $items,
