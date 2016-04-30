@@ -62,32 +62,39 @@ function field_slideshow_theme() {
  * Implements template_preprocess().
  */
 function template_preprocess_field_slideshow(&$variables) {
-
-  if ($variables['image_style']) {
-    $variables['image'] = array(
-      '#theme' => 'image_style',
-      '#style_name' => $variables['image_style'],
-    );
-  }
-  else {
-    $variables['image'] = array(
-      '#theme' => 'image',
-    );
-  }
-  $variables['image']['#attributes'] = $variables['item_attributes'];
+  // Add js variables
+  $js_variables = $variables["js_variables"];
+  // drupal_add_js(array('field_slideshow' => array('field-slideshow-' . $variables['slideshow_id'] => $js_variables)), 'setting');
+  $variables['#attached']['library'][] = 'field_slideshow/field_slideshow.view';
+  $variables['#attached']['drupalSettings']['field_slideshow'] = array(
+    'field-slideshow-' . $variables['slideshow_id'] => $js_variables,
+  );
+  // @todo:uncomment this.
+  // if ($variables['image_style']) {
+  //   $variables['image'] = array(
+  //     '#theme' => 'image_style',
+  //     '#style_name' => $variables['image_style'],
+  //   );
+  // }
+  // else {
+  //   $variables['image'] = array(
+  //     '#theme' => 'image',
+  //   );
+  // }
+  //$variables['image']['#attributes'] = $variables['item_attributes'];
 
   $item = $variables['items'];
 
 
   foreach ($variables['items'] as $key => $value) {
     if (Unicode::strlen($value->title) != 0) {
-      $variables['image'][$key]['#title'] = $value->title;
+      //$variables['image'][$key]['#title'] = $value->title;
     }
     if (($entity = $value->entity) && empty($value->uri)) {
-      $variables['image'][$key]['#uri'] = $entity->getFileUri();
+      //$variables['image'][$key]['#uri'] = $entity->getFileUri();
     }
     else {
-      $variables['image'][$key]['#uri'] = '';
+      //$variables['image'][$key]['#uri'] = '';
     }
     foreach ($variables['item_settings'] as $item_key => $item_val) {
       if($item_val['path'] == '') {
@@ -109,7 +116,7 @@ function template_preprocess_field_slideshow(&$variables) {
   }
 
   foreach (array('width', 'height', 'alt') as $key) {
-    $variables['image']["#$key"] = $item->$key;
+    //$variables['image']["#$key"] = $item->$key;
   }
 
 
@@ -154,14 +161,18 @@ function template_preprocess_field_slideshow(&$variables) {
   $variables['slides_max_height'] = 0;
   $slide_theme = (isset($variables['breakpoints']) && isset($variables['breakpoints']['mapping']) && !empty($variables['breakpoints']['mapping'])) ? 'picture' : 'image_style';
   $variables['slide'] = array();
+  //$variables['image_render'] = array();
   foreach ($variables['items'] as $num => $item) {
     // // Generate classes
     // $classes = array('field-slideshow-slide', 'field-slideshow-slide-' . (1+$num));
     $field_slideshow_zebra = ($field_slideshow_zebra == 'odd') ? 'even' : 'odd';
-     $classes[] = $field_slideshow_zebra;
-     if ($num == 0) $classes[] = 'first';
-     elseif ($num == count($variables['items']) - 1) $classes[] = 'last';
-     $variables['slide'][$num]['classes'] = implode(' ', $classes);
+    $classes[] = $field_slideshow_zebra;
+    if ($num == 0) $classes[] = 'first';
+    elseif ($num == count($variables['items']) - 1) $classes[] = 'last';
+    $variables['slide'][$num]['classes'] = implode(' ', $classes);
+    //$variables['image_render'][$num] = $variables['']
+    //print_r($item->getValue());exit;
+
 
     // // Generate the image html
     // $image = array();

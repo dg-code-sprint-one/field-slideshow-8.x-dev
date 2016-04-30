@@ -2,15 +2,15 @@
   Drupal.behaviors.field_slideshow = {
     attach: function(context) {
 
-      for (i in Drupal.settings.field_slideshow) {
-        var settings = Drupal.settings.field_slideshow[i],
+      for (i in drupalSettings.field_slideshow) {
+        var settings = drupalSettings.field_slideshow[i],
           slideshow = $('div.' + i),
           num_slides = slideshow.children().length,
           $this = false;
-
+        console.log(slideshow);
         if (!slideshow.hasClass('field-slideshow-processed')) {
           slideshow.addClass('field-slideshow-processed');
-
+          
           // Add padding if needed
           var max_outerWidth = 0;
           var max_outerHeight = 0;

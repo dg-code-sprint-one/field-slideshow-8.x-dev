@@ -1,4 +1,4 @@
-{{ attach_library('field_slideshow/field_slideshow.view') }}
+{#{{ attach_library('field_slideshow/field_slideshow.view') }}#}
 {% 
   set classes = [
     'field-slideshow-' ~ slideshow_id,
@@ -36,24 +36,16 @@
           'field-slideshow-slide-' ~ (1+num)
         ]
       %}
-      {% set style = (num) ? 'display:block' %}
-
-      <div classes="field-slideshow-slide field-slideshow-slide-{{1+num}} {{slide[num]['classes']}}" style="{{style}}">
-       
-
-        {#{% if url %}
-          <a href="{{ url }}">{{ image }}</a>
-        {% else %}
-          {{ image }}
-        {% endif %}
-        {% if item_settings[num]['caption'] is defined and item_settings[num]['caption'] is not empty %}
-          <div class="field-slideshow-caption">
-            <span class="field-slideshow-caption-text">
-              
-            </span>
-          </div>
-        {% endif %} #}
+      {% set style = (num) ? 'display:none' %}
+      <div class="field-slideshow-slide field-slideshow-slide-{{1+num}} {{slide[num]['classes']}}" style="{{style}}">
+        {{image[num]}}
       </div>
     {% endfor %}
   </div>
+  {% if controls_position != "before" %}
+    {{ controls }}
+  {% endif %}
+  {% if pager_position != "before" %}
+    {{ pager }}
+  {% endif %}
 </div>
