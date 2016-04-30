@@ -229,6 +229,13 @@ class FieldSlideshow extends ImageFormatter {
     // get summary of image_style and image_link from parent method.
     $summary = parent::settingsSummary();
 
+    $image_styles = image_style_options(FALSE);
+    // Unset possible 'No defined styles' option.
+    unset($image_styles['']);
+    // Styles could be lost because of enabled/disabled modules that defines
+    // their styles in code.
+    $image_style_setting = $this->getSetting('image_style');
+
     $caption_types = array(
       'title' => t('Title text'),
       'alt'   => t('Alt text'),
@@ -273,7 +280,9 @@ class FieldSlideshow extends ImageFormatter {
         if (isset($image_styles[$this->getSetting('slideshow_pager_image_style')])) {
           $pager_image_message .= t('Image style: @style', array('@style' => $image_styles[$this->getSetting('slideshow_pager_image_style')]));
         }
-        else $pager_image_message .= t('Original image');
+        else {
+          $pager_image_message .= t('Original image');
+        }
         $pager_image_message .= ')';
         $summary[] = $pager_image_message;
       break;

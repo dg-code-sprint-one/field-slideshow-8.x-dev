@@ -7,7 +7,6 @@
           slideshow = $('div.' + i),
           num_slides = slideshow.children().length,
           $this = false;
-        console.log(slideshow);
         if (!slideshow.hasClass('field-slideshow-processed')) {
           slideshow.addClass('field-slideshow-processed');
           
