@@ -60,25 +60,7 @@ class FieldSlideshow extends ImageFormatter {
    * {@inheritdoc}
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
-  	$image_styles = image_style_options(FALSE);
-    // $element['image_style'] = array(
-    //   '#title'          => t('Image style'),
-    //   '#type'           => 'select',
-    //   '#default_value'  => $this->getSetting('image_style'),
-    //   '#empty_option'   => t('None (original image)'),
-    //   '#options'        => $image_styles,
-    // );
-    // $links = array(
-    //   'content' => t('Content'),
-    //   'file'    => t('File'),
-    // );
-    // $element['image_link'] = array(
-    //   '#title'          => t('Link image to'),
-    //   '#type'           => 'select',
-    //   '#default_value'  => $this->getSetting('image_link'),
-    //   '#empty_option'   => t('Nothing'),
-    //   '#options'        => $links,
-    // );
+  	
     $element = parent::settingsForm($form, $form_state);
     $link_types = array(
       'content' => t('Content'),
@@ -243,34 +225,6 @@ class FieldSlideshow extends ImageFormatter {
   public function settingsSummary() {
     $summary = parent::settingsSummary();
 
-    // $image_styles = image_style_options(FALSE);
-    // // Unset possible 'No defined styles' option.
-    // unset($image_styles['']);
-    // // Styles could be lost because of enabled/disabled modules that defines
-    // // their styles in code.
-    // $image_style_setting = $this->getSetting('image_style');
-    // if (isset($image_styles[$image_style_setting])) {
-    //   $summary[] = t('Image style: @style', array('@style' => $image_styles[$image_style_setting]));
-    // }
-    // else {
-    //   $summary[] = t('Original image');
-    // }
-
-    // $link_types = array(
-    //   'content'   => t('content'),
-    //   'file'      => t('file'),
-    //   'colorbox'  => t('Colorbox'),
-    // );
-    // // Display this setting only if image is linked.
-    // $link_types_settings = $this->getSetting('image_link');
-    // if (isset($link_types[$link_types_settings])) {
-    //   $link_type_message = t('Link to: @link', array('@link' => $link_types[$link_types_settings]));
-    //   /*if ($this->getSetting('slideshow_link') == 'colorbox') {
-        
-    //   }*/
-    //   $summary[] = $link_type_message;
-    // }
-
     $caption_types = array(
       'title' => t('Title text'),
       'alt'   => t('Alt text'),
@@ -403,6 +357,7 @@ class FieldSlideshow extends ImageFormatter {
             }
         }
         $item_settings[$delta][$path] = !empty($uri) ? $uri : '';
+        //debug($item_settings[$delta][$path]);
       }
     }
 
@@ -421,6 +376,7 @@ class FieldSlideshow extends ImageFormatter {
       '#slideshow_id'         => $slideshow_count,
       '#controls_pause'       => $this->getSetting('slideshow_controls_pause'),
     );   
+    //debug($this->getSetting('slideshow_controls'));
     $elements[] = array(
       '#theme'                => 'field_slideshow',
       '#items'                => $items,
@@ -428,7 +384,7 @@ class FieldSlideshow extends ImageFormatter {
       '#image_style'          => $this->getSetting('image_style'),
       '#image'                => $images,
       '#order'                => $this->getSetting('slideshow_order'),
-      '#controls'             => $this->getSetting('slideshow_controls') === 1 ? $controls : array(),
+      '#controls'             => ($this->getSetting('slideshow_controls') == 1 ? $controls : array()),
       '#controls_position'    => $this->getSetting('slideshow_controls_position'),
       '#pager'                => $this->getSetting('slideshow_pager') !== '' ? $pager : array(),
       '#pager_position'       => $this->getSetting('slideshow_pager_position'),

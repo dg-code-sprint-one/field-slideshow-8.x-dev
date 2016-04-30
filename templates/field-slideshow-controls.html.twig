@@ -5,9 +5,10 @@
  *
  *
  */#}
+ 
 <div id="field-slideshow-{{ slideshow_id }}-controls" class="field-slideshow-controls">
   <a href="#" class="prev">{{ 'Prev'|t }}</a>
-  {% if controls_pause is not empty %}
+  {% if controls_pause %}
     <a href="#" class="play">{{ 'Play'|t }}</a>
     <a href="#" class="pause">{{ 'Pause'|t }}</a>
   {% endif %}

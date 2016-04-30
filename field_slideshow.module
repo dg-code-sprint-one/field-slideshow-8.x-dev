@@ -7,6 +7,7 @@
 
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Render\Element;
+use Drupal\image\ImageStyleInterface;
 
 /**
  * Implements hook_theme().
@@ -62,40 +63,11 @@ function field_slideshow_theme() {
  * Implements template_preprocess().
  */
 function template_preprocess_field_slideshow(&$variables) {
-  // Add js variables
-  $js_variables = $variables["js_variables"];
-  // drupal_add_js(array('field_slideshow' => array('field-slideshow-' . $variables['slideshow_id'] => $js_variables)), 'setting');
-  $variables['#attached']['library'][] = 'field_slideshow/field_slideshow.view';
-  $variables['#attached']['drupalSettings']['field_slideshow'] = array(
-    'field-slideshow-' . $variables['slideshow_id'] => $js_variables,
-  );
-  // @todo:uncomment this.
-  // if ($variables['image_style']) {
-  //   $variables['image'] = array(
-  //     '#theme' => 'image_style',
-  //     '#style_name' => $variables['image_style'],
-  //   );
-  // }
-  // else {
-  //   $variables['image'] = array(
-  //     '#theme' => 'image',
-  //   );
-  // }
-  //$variables['image']['#attributes'] = $variables['item_attributes'];
 
   $item = $variables['items'];
 
 
   foreach ($variables['items'] as $key => $value) {
-    if (Unicode::strlen($value->title) != 0) {
-      //$variables['image'][$key]['#title'] = $value->title;
-    }
-    if (($entity = $value->entity) && empty($value->uri)) {
-      //$variables['image'][$key]['#uri'] = $entity->getFileUri();
-    }
-    else {
-      //$variables['image'][$key]['#uri'] = '';
-    }
     foreach ($variables['item_settings'] as $item_key => $item_val) {
       if($item_val['path'] == '') {
        $variables['url'][$item_key]['path'] = '';
@@ -115,40 +87,26 @@ function template_preprocess_field_slideshow(&$variables) {
     }
   }
 
-  foreach (array('width', 'height', 'alt') as $key) {
-    //$variables['image']["#$key"] = $item->$key;
-  }
-
-
-  // Add js variables
-   //$js_variables = $variables["js_variables"];
-
-  // drupal_add_js(array('field_slideshow' => array('field-slideshow-' . $variables['slideshow_id'] => $js_variables)), 'setting');
 
   // // Add the JQuery plugins and the JS code
-  // if (module_exists('libraries')) {
-  //   $path = libraries_get_path('jquery.cycle');
-  //   if (file_exists($path . '/jquery.cycle.all.min.js')) drupal_add_js($path . '/jquery.cycle.all.min.js');
-  //   elseif (file_exists($path . '/jquery.cycle.all.js')) drupal_add_js($path . '/jquery.cycle.all.js');
+  $libraries_module_exists = \Drupal::moduleHandler()->moduleExists('libraries');
+  if ($libraries_module_exists) {
+    $libraries_path = DRUPAL_ROOT . '/libraries';
+    if (file_exists($libraries_path . '/jquery.cycle/jquery.cycle.all.min.js')) {
+      $variables['#attached']['library'][] = 'field_slideshow/field_slideshow.jquery.cycle.min';
+    }
+    elseif (file_exists($libraries_path . '/jquery.cycle/jquery.cycle.all.js')) {
+      $variables['#attached']['library'][] = 'field_slideshow/field_slideshow.jquery.cycle.all';
+    }
+    // Add js variables
+    $js_variables = $variables["js_variables"];
+    $variables['#attached']['library'][] = 'field_slideshow/field_slideshow.view';
+    $variables['#attached']['drupalSettings']['field_slideshow'] = array(
+      'field-slideshow-' . $variables['slideshow_id'] => $js_variables,
+    );
+  }
 
-  //   if (isset($js_variables['pager']) && $js_variables['pager'] == 'carousel') {
-  //     $path = libraries_get_path('jquery.jcarousel');
-  //     if (file_exists($path . '/lib/jquery.jcarousel.min.js')) drupal_add_js($path . '/lib/jquery.jcarousel.min.js');
-  //     elseif (file_exists($path . '/lib/jquery.jcarousel.js')) drupal_add_js($path . '/lib/jquery.jcarousel.js');
-  //   }
-
-  //   $path = libraries_get_path('jquery.imagesloaded');
-  //   if (file_exists($path . '/jquery.imagesloaded.min.js')) drupal_add_js($path . '/jquery.imagesloaded.min.js');
-  //   elseif (file_exists($path . '/jquery.imagesloaded.js')) drupal_add_js($path . '/jquery.imagesloaded.js');
-
-  //   drupal_add_js(drupal_get_path('module', 'field_slideshow') . '/field_slideshow.js');
-  // }
-
-  // // Add css
-  // drupal_add_css(drupal_get_path('module', 'field_slideshow') . '/field_slideshow.css');
-
-  
-
+  // @todo: Need to find how to reverse the array of objects.
   // // Change order if needed
   // if (isset($variables['order'])) {
   //   if ($variables['order'] == 'reverse') $variables['items'] = array_reverse($variables['items']);
@@ -161,15 +119,25 @@ function template_preprocess_field_slideshow(&$variables) {
   $variables['slides_max_height'] = 0;
   $slide_theme = (isset($variables['breakpoints']) && isset($variables['breakpoints']['mapping']) && !empty($variables['breakpoints']['mapping'])) ? 'picture' : 'image_style';
   $variables['slide'] = array();
-  //$variables['image_render'] = array();
+  $variables['slides_max_width'] = 0;
+  $variables['slides_max_height'] = 0;
+  
   foreach ($variables['items'] as $num => $item) {
-    // // Generate classes
-    // $classes = array('field-slideshow-slide', 'field-slideshow-slide-' . (1+$num));
+    $variables['image'][$num]['#item_attributes'] = array_merge(
+      $variables['image'][$num]['#item_attributes'], array(
+        'class'=> 'field-slideshow-image field-slideshow-image-' . (1 + $num)
+      )
+    );
+
+    // Generate classes
+    
     $field_slideshow_zebra = ($field_slideshow_zebra == 'odd') ? 'even' : 'odd';
     $classes[] = $field_slideshow_zebra;
     if ($num == 0) $classes[] = 'first';
     elseif ($num == count($variables['items']) - 1) $classes[] = 'last';
     $variables['slide'][$num]['classes'] = implode(' ', $classes);
+
+
     //$variables['image_render'][$num] = $variables['']
     //print_r($item->getValue());exit;
 
@@ -254,4 +222,88 @@ function template_preprocess_field_slideshow(&$variables) {
     $variables['controls'] = '';
     $variables['pager'] = '';
   }
+}
+
+/**
+ * Implements template_preprocess().
+ */
+function template_preprocess_field_slideshow_pager(&$variables) {
+  // Add thumbnails pager/carousel if needed
+  if (isset($variables['pager']) && ($variables['pager'] == 'image' || $variables['pager'] == 'carousel')) {
+
+    if ($variables['pager'] == 'carousel') {
+      $thumbnail_style = $variables['carousel_image_style'];
+      //$path = libraries_get_path('jquery.jcarousel');
+      $path = DRUPAL_ROOT . '/libraries/jquery.jcarousel';
+      if (isset($variables['carousel_skin']) && $variables['carousel_skin']) {
+        $variables['#attached']['library'][] = 'field_slideshow/field_slideshow.field_slideshow.jquery.carousel.skin.' . $variables['carousel_skin'];
+      }
+    }
+    else {
+      $thumbnail_style = $variables['pager_image_style'];
+    }
+
+    $thumbnails = array();
+    foreach ($variables['items'] as $num => $item) {
+      $thumbnail = array();
+      $thumbnail['path'] = $item->entity->getFileUri();
+      $thumbnail['attributes'] = $item->_attributes;
+      $thumbnail['attributes']['class'] = array(
+        'field-slideshow-thumbnail', 
+        'field-slideshow-thumbnail-' . (1 + $num),
+      );
+      $thumbnail['alt'] = isset($item->alt) ? $item->alt : '';
+      if (isset($item->width) && isset($item->height)) {
+        $thumbnail['width'] = $item->width;
+        $thumbnail['height'] = $item->height;
+      }
+      else {
+        $thumbnail_dims = getimagesize($thumbnail['path']);
+        $thumbnail['width'] = $thumbnail_dims[0];
+        $thumbnail['height'] = $thumbnail_dims[1];
+      }
+      if (isset($item->title) && strlen($item->title) > 0) {
+        $thumbnail['title'] = $item->title;
+      }
+      if ($thumbnail_style) {
+        $thumbnail['style_name'] = $thumbnail_style;
+        //$thumbnail_output = theme('image_style', $thumbnail);
+        $thumbnail_output = array(
+          '#theme'      => 'image_style',
+          '#style_name' => $thumbnail_style,
+          '#uri'        => $thumbnail['path'],
+          '#width'      => $thumbnail['width'],
+          '#height'     => $thumbnail['height'],
+          '#alt'        => $thumbnail['alt'],
+          '#attributes' => $thumbnail['attributes'],
+        );
+      }
+      else {
+        //$thumbnail_output = theme('image', $thumbnail);
+        $thumbnail_output = array(
+          '#theme'           => 'image_formatter',
+          '#item'            => $item,
+          '#item_attributes' => $thumbnail['attributes'],
+          '#url'             => $thumbnail['path'],
+          'image_style'      => $thumbnail_style,
+        );
+      }
+      // get image html.
+      $render_image = \Drupal::service('renderer')->render($thumbnail_output);
+
+      //$thumbnails[] = '<a href="#">' . $render_image . '</a>';
+      $thumbnails[] = $thumbnail_output;
+    }
+
+
+    $variables['thumbnails'] = array(
+      '#theme'      => 'item_list',
+      '#items'       => $thumbnails,
+      '#attributes'  => array(
+        'id'    => 'field-slideshow-' . $variables['slideshow_id'] . '-pager',
+        'class' => 'field-slideshow-pager slides-' . count($variables['items']),
+      ),
+    );
+  }
+  $variables['items_count'] = count($variables['items']);
 }

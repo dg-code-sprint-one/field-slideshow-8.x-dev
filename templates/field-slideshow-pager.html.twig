@@ -7,12 +7,25 @@
  */#}
 {% if pager == 'number'  %}
 
-  <div id="field-slideshow-{{ slideshow_id }}-pager" class="field-slideshow-pager slides-{# PHP: print count($items); #}"></div>
+  {%
+    set classes = [
+      'field-slideshow-pager',
+      'slides-' ~ items_count,
+    ]
+  %}
+
+  <div id="field-slideshow-{{ slideshow_id }}-pager"{{attributes.addClass(classes)}}></div>
 
 {% elseif pager == 'image' or pager == 'carousel'  %}
 
   {% if pager == 'carousel'  %}
-    <div id="field-slideshow-{{ slideshow_id }}-carousel-wrapper" class="field-slideshow-carousel-wrapper{# PHP: print ($pager == 'carousel' && $carousel_skin) ? " jcarousel-skin-" . $carousel_skin : ""; #}">
+    {%
+      set slideclasses = [
+        'field-slideshow-carousel-wrapper',
+        pager == 'carousel' and carousel_skin ? 'jcarousel-skin-' ~ carousel_skin
+      ]
+    %}
+    <div id="field-slideshow-{{ slideshow_id }}-carousel-wrapper" {{attributes.addClass(slideclasses)}}>
       {% if not carousel_skin  %}<a href="#" class="carousel-prev">«</a>{% endif %}
       <div id="field-slideshow-{{ slideshow_id }}-carousel" class="field-slideshow-carousel">
   {% endif %}

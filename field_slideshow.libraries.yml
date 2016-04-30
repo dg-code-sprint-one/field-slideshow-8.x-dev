@@ -1,3 +1,34 @@
+field_slideshow.jquery.cycle.min:
+  version: VERSION
+  js:
+    /libraries/jquery.cycle/jquery.cycle.all.min.js: {}
+
+field_slideshow.jquery.cycle.all:
+  version: VERSION
+  js:
+    /libraries/jquery.cycle/jquery.cycle.all.js: {}
+
+field_slideshow.jquery.carousel.min:
+  version: VERSION
+  js:
+    /libraries/jquery.jcarousel/lib/jquery.jcarousel.min.js: {}
+
+field_slideshow.jquery.carousel:
+  version: VERSION
+  js:
+    /libraries/jquery.jcarousel/lib/jquery.jcarousel.js: {}
+
+field_slideshow.jquery.carousel.skin.tango:
+  version: VERSION
+  css:
+    /libraries/jquery.jcarousel/skins/tango/skins.css: {}
+
+field_slideshow.jquery.carousel.skin.ie7:
+  version: VERSION
+  css:
+    /libraries/jquery.jcarousel/skins/ie7/skins.css: {}
+
+
 field_slideshow.view:
   version: VERSION
   css:
@@ -5,8 +36,6 @@ field_slideshow.view:
       css/field_slideshow.css: {}
   js:
     js/field_slideshow.js: {}
-    /libraries/jquery.cycle/jquery.cycle.all.js: {}
-    /libraries/jquery.jcarousel/lib/jquery.jcarousel.min.js: {}
   dependencies:
     - core/jquery
     - core/drupal
