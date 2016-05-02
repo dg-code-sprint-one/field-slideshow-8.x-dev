@@ -66,32 +66,6 @@ function template_preprocess_field_slideshow(&$variables) {
 
   $item = $variables['items'];
 
-  // Loop over items and prepare links.
-  foreach ($variables['items'] as $key => $value) {
-    foreach ($variables['item_settings'] as $item_key => $item_val) {
-      if ($item_val['path'] == '') {
-       $variables['url'][$item_key]['path'] = '';
-      } 
-      elseif ($item_val['path']->isExternal() == TRUE) {
-        $variables['url'][$item_key]['path'] = $item_val['path']->getUri();
-      } 
-      elseif ($item_val['path']->isExternal() == FALSE) {
-        $variables['url'][$item_key]['path'] = $item_val['path']->getOptions()['entity']->url();
-      }
-
-      if($item_val['caption_path'] == '') {
-        $variables['caption_url'][$item_key]['path'] = '';
-      } 
-      elseif ($item_val['caption_path']->isExternal() == TRUE) {
-        $variables['caption_url'][$item_key]['path'] = $item_val['caption_path']->getUri();
-      } 
-      elseif ($item_val['caption_path']->isExternal() == FALSE) {
-        $variables['caption_url'][$item_key]['path'] = $item_val['caption_path']->getOptions()['entity']->url();
-      }
-    }
-  }
-
-
   // // Add the JQuery plugins and the JS code
   $libraries_module_exists = \Drupal::moduleHandler()->moduleExists('libraries');
   if ($libraries_module_exists) {
@@ -110,12 +84,32 @@ function template_preprocess_field_slideshow(&$variables) {
     );
   }
 
-  // @todo: Need to find how to reverse the array of objects.
-  // // Change order if needed
-  // if (isset($variables['order'])) {
-  //   if ($variables['order'] == 'reverse') $variables['items'] = array_reverse($variables['items']);
-  //   elseif ($variables['order'] == 'random') shuffle($variables['items']);
-  // }
+  // Change order if needed
+  if (isset($variables['order'])) {
+    $getSlide = $variables['items']->getValue();
+    if ($variables['order'] == 'reverse') {
+      $slide_order = array_reverse($getSlide);
+      $variables['item_settings'] = array_reverse($variables['item_settings']);
+      $variables['items']->setValue($slide_order);
+    }
+    elseif ($variables['order'] == 'random') {
+      //$variables['items'][] = $variables['item_settings'];
+   /*
+      foreach ($variables['items']->getValue() as $key => $value) {
+       
+        $value[] = $variables['item_settings'][$key];
+
+         kint($value);
+        //$value->__set('caption', $variables['item_settings'][$key]);
+      }
+         kint($variables['items']->getValue());die;*/
+
+      shuffle($getSlide);
+      shuffle($variables['item_settings']);
+      $variables['item_settings'] = $variables['item_settings'];
+      $variables['items']->setValue($getSlide);
+    }
+  }
 
   // Generate slides
   $field_slideshow_zebra = 'odd';
@@ -132,9 +126,7 @@ function template_preprocess_field_slideshow(&$variables) {
         'class'=> 'field-slideshow-image field-slideshow-image-' . (1 + $num)
       )
     );
-
     // Generate classes
-    
     $field_slideshow_zebra = ($field_slideshow_zebra == 'odd') ? 'even' : 'odd';
     $classes[] = $field_slideshow_zebra;
     if ($num == 0) $classes[] = 'first';

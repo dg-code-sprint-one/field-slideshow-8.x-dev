@@ -329,6 +329,7 @@ class FieldSlideshow extends ImageFormatter {
         } elseif ($caption_settings == 'alt') {
           $item_settings[$delta]['caption'] = $item->getValue()['alt'];
         }
+        $item->set('caption',$item_settings[$delta]['caption']);
       }
     }
 
@@ -366,8 +367,9 @@ class FieldSlideshow extends ImageFormatter {
                 $image_uri = $file->getFileUri();
                 $uri = Url::fromUri(file_create_url($image_uri));
               }
-              $item_settings[$file_delta][$path] = !empty($uri) ? $uri : '';
+              $item_settings[$file_delta][$path] = !empty($uri) ? $uri : ''; 
             }
+          break;
         }
         $item_settings[$delta][$path] = !empty($uri) ? $uri : '';
       }
