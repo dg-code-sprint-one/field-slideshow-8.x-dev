@@ -84,6 +84,8 @@ function template_preprocess_field_slideshow(&$variables) {
     );
   }
 
+
+
   // Change order if needed
   if (isset($variables['order'])) {
     $getSlide = $variables['items']->getValue();
@@ -91,18 +93,16 @@ function template_preprocess_field_slideshow(&$variables) {
       $slide_order = array_reverse($getSlide);
       $variables['item_settings'] = array_reverse($variables['item_settings']);
       $variables['items']->setValue($slide_order);
+      kint($variables['items']->getValue());die;
     }
     elseif ($variables['order'] == 'random') {
-      //$variables['items'][] = $variables['item_settings'];
-   /*
-      foreach ($variables['items']->getValue() as $key => $value) {
-       
+      //kint($getSlide);   
+      foreach ($variables['items']->getValue() as $key => $value) { 
         $value[] = $variables['item_settings'][$key];
-
          kint($value);
         //$value->__set('caption', $variables['item_settings'][$key]);
       }
-         kint($variables['items']->getValue());die;*/
+         kint($getSlide);die;
 
       shuffle($getSlide);
       shuffle($variables['item_settings']);

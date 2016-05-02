@@ -354,11 +354,13 @@ class FieldSlideshow extends ImageFormatter {
       }
       foreach ($items as $delta => $item) {
         $uri = array();
+        $item = $item->toArray();
         switch ($link_type) {
           case 'content':
             $entity = $item->getEntity();
             if (!$entity->isNew()) {
               $uri = $entity->urlInfo();
+              $item_settings[$delta][$path] = !empty($uri) ? $uri : '';
             }
           break;
           case 'file':
@@ -371,9 +373,8 @@ class FieldSlideshow extends ImageFormatter {
             }
           break;
         }
-        $item_settings[$delta][$path] = !empty($uri) ? $uri : '';
-      }
-    }
+      }      
+    }    
 
     $pager = array(
       '#theme'                => 'field_slideshow_pager',
