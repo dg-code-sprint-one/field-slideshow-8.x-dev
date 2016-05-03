@@ -326,6 +326,7 @@ class FieldSlideshow extends ImageFormatter {
 
      // Loop through required links (because image and caption can have different links).
     foreach ($items as $delta => $item) {
+      $uri = array();
       // Set Image caption
       if ($this->getSetting('slideshow_caption') != '') {
         $caption_settings = $this->getSetting('slideshow_caption');
@@ -338,24 +339,26 @@ class FieldSlideshow extends ImageFormatter {
         $item->set('caption',$item_settings[$delta]['caption']);
       }
       // Set Image and Caption Link
-      foreach ($links as $setting => $path) {      
-        switch ($this->getSetting($setting)) {
-          case 'content':
-            $entity = $item->getEntity();
-            if (!$entity->isNew()) {
-              $uri = $entity->urlInfo();
-              $uri = !empty($uri) ? $uri : '';
-              $item->set($path, $uri);
-            }
-          break;
-          case 'file':
-            foreach ($files as $file_delta => $file) {
-              $image_uri = $file->getFileUri();
-              $uri = Url::fromUri(file_create_url($image_uri));
-              $uri = !empty($uri) ? $uri : '';
-              $items[$file_delta]->set($path, $uri);
-            }
-          break;
+      foreach ($links as $setting => $path) {
+        if ($this->getSetting($setting) != '') {
+          switch ($this->getSetting($setting)) {
+            case 'content':
+              $entity = $item->getEntity();
+              if (!$entity->isNew()) {
+                $uri = $entity->urlInfo();
+                $uri = !empty($uri) ? $uri : '';
+                $item->set($path, $uri);
+              }
+            break;
+            case 'file':
+              foreach ($files as $file_delta => $file) {
+                $image_uri = $file->getFileUri();
+                $uri = Url::fromUri(file_create_url($image_uri));
+                $uri = !empty($uri) ? $uri : '';
+                $items[$file_delta]->set($path, $uri);
+              }
+            break;
+          }
         }
       }
     }
