@@ -77,7 +77,7 @@ class FieldSlideshow extends ImageFormatter {
       $element['slideshow_colorbox_image_style'] = array(
         '#title'          => t('Colorbox image style'),
         '#type'           => 'select',
-        '#default_value'  => $this->getSetting['slideshow_colorbox_image_style'],
+        '#default_value'  => $this->getSetting('slideshow_colorbox_image_style'),
         '#empty_option'   => t('None (original image)'),
         '#options'        => image_style_options(FALSE),
         '#states' => array(
@@ -93,7 +93,7 @@ class FieldSlideshow extends ImageFormatter {
       $element['slideshow_colorbox_slideshow'] = array(
         '#title'          => t('Colorbox slideshow'),
         '#type'           => 'select',
-        '#default_value'  => $this->getSetting['slideshow_colorbox_slideshow'],
+        '#default_value'  => $this->getSetting('slideshow_colorbox_slideshow'),
         '#empty_option'   => t('No slideshow'),
         '#options'        => $colorbox_slideshow,
         '#states' => array(
@@ -106,7 +106,7 @@ class FieldSlideshow extends ImageFormatter {
         '#title'          => t('Colorbox slideshow speed'),
         '#type'           => 'textfield',
         '#size'           => 5,
-        '#default_value'  => $this->getSetting['slideshow_colorbox_slideshow_speed'],
+        '#default_value'  => $this->getSetting('slideshow_colorbox_slideshow_speed'),
         '#description'    => t('Time between transitions (ms).'),
         '#states' => array(
           'invisible' => array(
@@ -122,7 +122,7 @@ class FieldSlideshow extends ImageFormatter {
       $element['slideshow_colorbox_transition'] = array(
         '#title'          => t('Colorbox transition'),
         '#type'           => 'select',
-        '#default_value'  => $this->getSetting['slideshow_colorbox_transition'],
+        '#default_value'  => $this->getSetting('slideshow_colorbox_transition'),
         '#options'        => $colorbox_transitions,
         '#states' => array(
           'visible' => array(
@@ -134,7 +134,7 @@ class FieldSlideshow extends ImageFormatter {
         '#title'          => t('Colorbox transition speed'),
         '#type'           => 'textfield',
         '#size'           => 5,
-        '#default_value'  => $this->getSetting['slideshow_colorbox_speed'],
+        '#default_value'  => $this->getSetting('slideshow_colorbox_speed'),
         '#description'    => t('Duration of transition (ms).'),
         '#states' => array(
           'visible' => array(
