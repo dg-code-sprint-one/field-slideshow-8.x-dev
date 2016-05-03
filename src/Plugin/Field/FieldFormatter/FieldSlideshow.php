@@ -32,8 +32,8 @@ class FieldSlideshow extends ImageFormatter {
    */
   public static function defaultSettings() {
     return array(
-      'image_style'               => '',
-      'image_link'                      => '',
+      'image_style'                         => '',
+      'image_link'                          => '',
       'slideshow_colorbox_image_style'      => '',
       'slideshow_colorbox_slideshow'        => '',
       'slideshow_colorbox_slideshow_speed'  => '4000',
@@ -72,6 +72,77 @@ class FieldSlideshow extends ImageFormatter {
       'title'   => t('Title text'),
       'alt'     => t('Alt text'),
     );
+    if(\Drupal::moduleHandler()->moduleExists('colorbox')) {
+      $element['image_link']['#options']['colorbox'] = 'Colorbox';
+      $element['slideshow_colorbox_image_style'] = array(
+        '#title'          => t('Colorbox image style'),
+        '#type'           => 'select',
+        '#default_value'  => $this->getSetting['slideshow_colorbox_image_style'],
+        '#empty_option'   => t('None (original image)'),
+        '#options'        => image_style_options(FALSE),
+        '#states' => array(
+          'visible' => array(
+            ':input[name$="[settings_edit_form][settings][image_link]"]' => array('value' => 'colorbox'),
+          ),
+        ),
+      );
+      $colorbox_slideshow = array(
+        'automatic' => t('Automatic'),
+        'manual'    => t('Manual'),
+      );
+      $element['slideshow_colorbox_slideshow'] = array(
+        '#title'          => t('Colorbox slideshow'),
+        '#type'           => 'select',
+        '#default_value'  => $this->getSetting['slideshow_colorbox_slideshow'],
+        '#empty_option'   => t('No slideshow'),
+        '#options'        => $colorbox_slideshow,
+        '#states' => array(
+          'visible' => array(
+            ':input[name$="[settings_edit_form][settings][image_link]"]' => array('value' => 'colorbox'),
+          ),
+        ),
+      );
+      $element['slideshow_colorbox_slideshow_speed'] = array(
+        '#title'          => t('Colorbox slideshow speed'),
+        '#type'           => 'textfield',
+        '#size'           => 5,
+        '#default_value'  => $this->getSetting['slideshow_colorbox_slideshow_speed'],
+        '#description'    => t('Time between transitions (ms).'),
+        '#states' => array(
+          'invisible' => array(
+            ':input[name$="[settings_edit_form][settings][slideshow_colorbox_slideshow]"]' => array('value' => ''),
+          ),
+        ),
+      );
+      $colorbox_transitions = array(
+        'none'    => t('None'),
+        'elastic' => t('Elastic'),
+        'fade'    => t('Fade'),
+      );
+      $element['slideshow_colorbox_transition'] = array(
+        '#title'          => t('Colorbox transition'),
+        '#type'           => 'select',
+        '#default_value'  => $this->getSetting['slideshow_colorbox_transition'],
+        '#options'        => $colorbox_transitions,
+        '#states' => array(
+          'visible' => array(
+            ':input[name$="[settings_edit_form][settings][image_link]"]' => array('value' => 'colorbox'),
+          ),
+        ),
+      );
+      $element['slideshow_colorbox_speed'] = array(
+        '#title'          => t('Colorbox transition speed'),
+        '#type'           => 'textfield',
+        '#size'           => 5,
+        '#default_value'  => $this->getSetting['slideshow_colorbox_speed'],
+        '#description'    => t('Duration of transition (ms).'),
+        '#states' => array(
+          'visible' => array(
+            ':input[name$="[settings_edit_form][settings][image_link]"]' => array('value' => 'colorbox'),
+          ),
+        ),
+      );
+    }
     $element['slideshow_caption'] = array(
       '#title'          => t('Caption'),
       '#type'           => 'select',
@@ -236,6 +307,30 @@ class FieldSlideshow extends ImageFormatter {
     // their styles in code.
     $image_style_setting = $this->getSetting('image_style');
 
+    //Colorbox
+    $image_link_setting = $this->getSetting('image_link');
+    if(isset($image_link_setting) && $image_link_setting == 'colorbox') {
+      $link_type_message = t('Link to: @link', array('@link' => $this->getSetting('image_link')));
+      $link_type_message .= ' (';
+      $colorbox_img_style_settings = $this->getSetting('slideshow_colorbox_image_style');
+      if (isset($colorbox_img_style_settings)) {
+        $link_type_message .= t('Image style: @style', array('@style' => $image_styles[$this->getSetting('slideshow_colorbox_image_style')]));
+      }
+      else $link_type_message .=  t('Original image');
+      $colorbox_slideshow_settings = $this->getSetting('slideshow_colorbox_slideshow');
+      if (isset($colorbox_slideshow_settings)) {
+        $colorbox_slideshow = array(
+          'automatic' => t('Automatic'),
+          'manual'    => t('Manual'),
+        );
+        $link_type_message .= ', with Slideshow (' . $colorbox_slideshow[$this->getSetting('slideshow_colorbox_slideshow')] . ' - Speed: ' . $this->getSetting('slideshow_colorbox_slideshow_speed') . ')';
+      }
+
+      $link_type_message .= ')';
+      $summary[] = $link_type_message;
+    }
+
+
     $caption_types = array(
       'title' => t('Title text'),
       'alt'   => t('Alt text'),
@@ -368,9 +463,7 @@ class FieldSlideshow extends ImageFormatter {
       '#items'                => $items,
       '#pager'                => $this->getSetting('slideshow_pager'),
       '#pager_image_style'    => $this->getSetting('slideshow_pager_image_style'),
-      //'#carousel_image_style' => $this->getSetting('slideshow_carousel_image_style'),
       '#slideshow_id'         => $slideshow_count,
-      //'#carousel_skin'        => $this->getSetting('slideshow_carousel_skin'),
     );
     $controls = array(
       '#theme'                => 'field_slideshow_controls',
@@ -396,13 +489,6 @@ class FieldSlideshow extends ImageFormatter {
         'timeout'              => $this->getSetting('slideshow_timeout'),
         'pause'                => $this->getSetting('slideshow_pause'),
         'start_on_hover'       => $this->getSetting('slideshow_start_on_hover'),
-        // 'carousel_visible'     => $this->getSetting('slideshow_carousel_visible'),
-        // 'carousel_scroll'      => $this->getSetting('slideshow_carousel_scroll'),
-        // 'carousel_speed'       => $this->getSetting('slideshow_carousel_speed'),
-        // 'carousel_vertical'    => $this->getSetting('slideshow_carousel_vertical'),
-        // 'carousel_circular'    => $this->getSetting('slideshow_carousel_circular'),
-        // 'carousel_follow'      => $this->getSetting('slideshow_carousel_follow'),
-        // 'carousel_skin'        => $this->getSetting('slideshow_carousel_skin'),
         // Need to access the following variables in js too
         'pager'                => $this->getSetting('slideshow_pager'),
         'controls'             => $this->getSetting('slideshow_controls') === 1 ? $controls : array(),
