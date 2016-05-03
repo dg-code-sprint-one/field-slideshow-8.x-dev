@@ -17,7 +17,7 @@ function field_slideshow_theme() {
     'field_slideshow' => array(
       'variables'     => array(
         'items'                 => NULL,
-        'item_settings'         => array(),
+        //'item_settings'         => array(),
         'image_style'           => NULL,
         'image'                 => NULL,
         'order'                 => NULL,
@@ -66,7 +66,7 @@ function template_preprocess_field_slideshow(&$variables) {
 
   $item = $variables['items'];
 
-  // // Add the JQuery plugins and the JS code
+  // Add the JQuery plugins and the JS code
   $libraries_module_exists = \Drupal::moduleHandler()->moduleExists('libraries');
   if ($libraries_module_exists) {
     $libraries_path = DRUPAL_ROOT . '/libraries';
@@ -84,29 +84,15 @@ function template_preprocess_field_slideshow(&$variables) {
     );
   }
 
-
-
   // Change order if needed
   if (isset($variables['order'])) {
     $getSlide = $variables['items']->getValue();
     if ($variables['order'] == 'reverse') {
       $slide_order = array_reverse($getSlide);
-      $variables['item_settings'] = array_reverse($variables['item_settings']);
       $variables['items']->setValue($slide_order);
-      kint($variables['items']->getValue());die;
     }
     elseif ($variables['order'] == 'random') {
-      //kint($getSlide);   
-      foreach ($variables['items']->getValue() as $key => $value) { 
-        $value[] = $variables['item_settings'][$key];
-         kint($value);
-        //$value->__set('caption', $variables['item_settings'][$key]);
-      }
-         kint($getSlide);die;
-
       shuffle($getSlide);
-      shuffle($variables['item_settings']);
-      $variables['item_settings'] = $variables['item_settings'];
       $variables['items']->setValue($getSlide);
     }
   }

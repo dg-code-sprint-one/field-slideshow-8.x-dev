@@ -319,67 +319,50 @@ class FieldSlideshow extends ImageFormatter {
     $elements = array();
     $entity = array();
 
-    // Get correct caption
-    $item_settings = array();
-    if ($this->getSetting('slideshow_caption') != '') {
-      foreach ($items as $delta => $item) {
-        $caption_settings = $this->getSetting('slideshow_caption');
-        if ($caption_settings == 'title') {
-          $item_settings[$delta]['caption'] = $item->getValue()['title'];
-        } elseif ($caption_settings == 'alt') {
-          $item_settings[$delta]['caption'] = $item->getValue()['alt'];
-        }
-        $item->set('caption',$item_settings[$delta]['caption']);
-      }
-    }
-
     $links = array(
       'image_link'          => 'path',
       'slideshow_caption_link'  => 'caption_path',
     );
 
-    // Loop through required links (because image and caption can have different links).
-    foreach ($links as $setting => $path) {
-      // Check if the formatter involves a link.
-      $link_type = '';
-      switch ($this->getSetting($setting)) {
-        case 'content':
-          $link_type = 'content';
-        break;
-        case 'file':
-          $link_type = 'file';
-        case 'colorbox':
-          $link_type = 'file';
-        break;
+     // Loop through required links (because image and caption can have different links).
+    foreach ($items as $delta => $item) {
+      // Set Image caption
+      if ($this->getSetting('slideshow_caption') != '') {
+        $caption_settings = $this->getSetting('slideshow_caption');
+        if ($caption_settings == 'title') {
+          $item_settings[$delta]['caption'] = $item->getValue()['title'];
+        } 
+        elseif ($caption_settings == 'alt') {
+          $item_settings[$delta]['caption'] = $item->getValue()['alt'];
+        }
+        $item->set('caption',$item_settings[$delta]['caption']);
       }
-      foreach ($items as $delta => $item) {
-        $uri = array();
-        $item = $item->toArray();
-        switch ($link_type) {
+      // Set Image and Caption Link
+      foreach ($links as $setting => $path) {      
+        switch ($this->getSetting($setting)) {
           case 'content':
             $entity = $item->getEntity();
             if (!$entity->isNew()) {
               $uri = $entity->urlInfo();
-              $item_settings[$delta][$path] = !empty($uri) ? $uri : '';
+              $uri = !empty($uri) ? $uri : '';
+              $item->set($path, $uri);
             }
           break;
           case 'file':
             foreach ($files as $file_delta => $file) {
-              if (isset($link_type)) {
-                $image_uri = $file->getFileUri();
-                $uri = Url::fromUri(file_create_url($image_uri));
-              }
-              $item_settings[$file_delta][$path] = !empty($uri) ? $uri : ''; 
+              $image_uri = $file->getFileUri();
+              $uri = Url::fromUri(file_create_url($image_uri));
+              $uri = !empty($uri) ? $uri : '';
+              $items[$file_delta]->set($path, $uri);
             }
           break;
         }
-      }      
-    }    
-
+      }
+    }
+   
     $pager = array(
       '#theme'                => 'field_slideshow_pager',
       '#items'                => $items,
-      '#item_settings'        => $item_settings,
       '#pager'                => $this->getSetting('slideshow_pager'),
       '#pager_image_style'    => $this->getSetting('slideshow_pager_image_style'),
       //'#carousel_image_style' => $this->getSetting('slideshow_carousel_image_style'),
@@ -395,7 +378,6 @@ class FieldSlideshow extends ImageFormatter {
     $elements[] = array(
       '#theme'                => 'field_slideshow',
       '#items'                => $items,
-      '#item_settings'        => $item_settings,
       '#image_style'          => $this->getSetting('image_style'),
       '#image'                => $images,
       '#order'                => $this->getSetting('slideshow_order'),

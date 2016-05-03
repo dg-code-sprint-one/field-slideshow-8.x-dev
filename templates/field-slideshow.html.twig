@@ -46,10 +46,10 @@
       {% set style = (num) ? 'display:none' %}
       <div class="field-slideshow-slide field-slideshow-slide-{{1+num}} {{slide[num]['classes']}}" style="{{style}}">
         {{image[num]}}
-        {% if item_settings[num]['caption'] is defined and item_settings[num]['caption'] != '' %}
+        {% if item[num]['caption'] is defined and item[num]['caption'] != '' %}
           <div class="field-slideshow-caption">
             <span class="field-slideshow-caption-text">
-              {{ link(item_settings[num]['caption'], item_settings[num]['caption_path']) }}
+              {{ link(item[num]['caption'], item[num]['caption_path']) }}
             </span>
           </div>
         {% endif %}
