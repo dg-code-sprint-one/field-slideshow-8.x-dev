@@ -125,13 +125,13 @@ function template_preprocess_field_slideshow(&$variables) {
     $variables['slide'][$num]['classes'] = implode(' ', $classes);
 
     //Colorbox
-    $variables['colorbox_img_path'] = $item->getValue()['path']['path'];
+    $variables['colorbox_img_path'] = $item->getValue()['path']['uri'];
     $variables['image_url'] = $variables['image'][$num]['#url'];
     if ($variables['image_url'] == '' && $variables['colorbox_img_path'] != '') {
       $variables['colorbox_attributes'][$num] = new Attribute();
-      $variables['colorbox_attributes'][$num]['title'] = $items[$num]->getValue()['path']['options']['attributes']['title'];
-      $variables['colorbox_attributes'][$num]['rel'] = $items[$num]->getValue()['path']['options']['attributes']['rel'];
-      $variables['colorbox_attributes'][$num]['class'] = $items[$num]->getValue()['path']['options']['attributes']['class'];
+      $variables['colorbox_attributes'][$num]['title'] = $items[$num]->getValue()['path']['attributes']['title'];
+      $variables['colorbox_attributes'][$num]['rel'] = $items[$num]->getValue()['path']['attributes']['rel'];
+      $variables['colorbox_attributes'][$num]['class'] = $items[$num]->getValue()['path']['attributes']['class'];
     }
   }
 
@@ -146,6 +146,9 @@ function template_preprocess_field_slideshow(&$variables) {
  * Implements template_preprocess().
  */
 function template_preprocess_field_slideshow_pager(&$variables) {
+
+  $items = $variables['items'];
+
   // Add thumbnails pager/carousel if needed
   if (isset($variables['pager']) && ($variables['pager'] == 'image' || $variables['pager'] == 'carousel')) {
 

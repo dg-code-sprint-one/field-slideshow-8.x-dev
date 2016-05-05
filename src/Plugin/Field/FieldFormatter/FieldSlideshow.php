@@ -422,7 +422,6 @@ class FieldSlideshow extends ImageFormatter {
      // Loop through required links (because image and caption can have different links).
     foreach ($items as $delta => $item) {
       $uri = array();
-      $uri_arry = array();
       // Set Image caption
       if ($this->getSetting('slideshow_caption') != '') {
         $caption_settings = $this->getSetting('slideshow_caption');
@@ -454,7 +453,8 @@ class FieldSlideshow extends ImageFormatter {
                 $items[$file_delta]->set($path, $uri);
               }
             break;
-            case 'colorbox':      
+            case 'colorbox': 
+              $attrib = array();     
               // check if we need a thumbnail and change the link
               if ($this->getSetting('slideshow_colorbox_image_style') != '') {
                 $entity = $item->getEntity();
@@ -463,24 +463,24 @@ class FieldSlideshow extends ImageFormatter {
                   $uri = Url::fromUri(file_create_url($image_uri));
                   $uri = !empty($uri) ? $uri : '';
                   $uri = ImageStyle::load($this->getSetting('slideshow_colorbox_image_style'))->buildUrl($image_uri);
-                  $uri_arry['path'] = $uri;
+                  $attrib['uri'] = $uri;
 
                   //add correct attributes
-                  $uri_arry['options']['attributes'] = array(
+                  $attrib['attributes'] = array(
                       'class' => array('colorbox'),
                       'rel'   => 'field-slideshow[' . 'nid' . '-' . $entity->id() . ']',
                   );
 
                   if ($this->getSetting('slideshow_caption') != '')
-                    $uri_arry['options']['attributes']['title'] = $items[$file_delta]->getValue()['caption'];
+                    $attrib['attributes']['title'] = $items[$file_delta]->getValue()['caption'];
                  
                   $colorbox_slideshow = $this->getSetting('slideshow_colorbox_slideshow');
                   if (isset($colorbox_slideshow) && $colorbox_slideshow != '') {
-                    $uri_arry['options']['attributes']['class'] = array('colorbox-load');
-                    $uri_arry['path'] .= (strpos($uri_arry['path'], '?') === FALSE) ? '?' : '&';
-                    $uri_arry['path'] .= 'slideshow=true&slideshowAuto=' . (($this->getSetting('slideshow_colorbox_slideshow') == 'automatic') ? 'true':'false') . '&slideshowSpeed=' . $this->getSetting('slideshow_colorbox_slideshow_speed') . '&speed=' . $this->getSetting('slideshow_colorbox_speed') . '&transition=' . $this->getSetting('slideshow_colorbox_transition');
+                    $attrib['attributes']['class'] = array('colorbox-load');
+                    $attrib['uri'] .= (strpos($attrib['path'], '?') === FALSE) ? '?' : '&';
+                    $attrib['uri'] .= 'slideshow=true&slideshowAuto=' . (($this->getSetting('slideshow_colorbox_slideshow') == 'automatic') ? 'true':'false') . '&slideshowSpeed=' . $this->getSetting('slideshow_colorbox_slideshow_speed') . '&speed=' . $this->getSetting('slideshow_colorbox_speed') . '&transition=' . $this->getSetting('slideshow_colorbox_transition');
                   }
-                  $items[$file_delta]->set($path, $uri_arry);
+                  $items[$file_delta]->set($path, $attrib);
                 }
               }
             break;
