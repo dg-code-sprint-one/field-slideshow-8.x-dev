@@ -92,6 +92,7 @@ function template_preprocess_field_slideshow(&$variables) {
   // Change order if needed
   if (isset($variables['order'])) {
     $getSlide = $items->getValue();
+    //kint($getSlide);
     if ($variables['order'] == 'reverse') {
       $slide_order = array_reverse($getSlide);
       $items->setValue($slide_order);
@@ -128,9 +129,9 @@ function template_preprocess_field_slideshow(&$variables) {
     if (!is_object($item->getValue()['path'])) {
       $variables['colorbox_img_path'][$num]['path'] = $item->getValue()['path']['uri'];
     }
-
+    
     $variables['image_url'] = $variables['image'][$num]['#url'];
-    if ($variables['image_url'] == '' && $variables['colorbox_img_path'] != '') {
+    if ($variables['image_url'] == '' && $variables['colorbox_img_path'][$num]['path'] != '') {
       $variables['colorbox_attributes'][$num] = new Attribute();
       $variables['colorbox_attributes'][$num]['title'] = $items[$num]->getValue()['path']['attributes']['title'];
       $variables['colorbox_attributes'][$num]['rel'] = $items[$num]->getValue()['path']['attributes']['rel'];
