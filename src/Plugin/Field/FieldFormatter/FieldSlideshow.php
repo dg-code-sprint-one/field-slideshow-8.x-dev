@@ -479,7 +479,7 @@ class FieldSlideshow extends ImageFormatter {
                   $colorbox_slideshow = $this->getSetting('slideshow_colorbox_slideshow');
                   if (isset($colorbox_slideshow) && $colorbox_slideshow != '') {
                     $attrib['attributes']['class'] = array('colorbox-load');
-                    $attrib['uri'] .= (strpos($attrib['path'], '?') === FALSE) ? '?' : '&';
+                    $attrib['uri'] .= (strpos($attrib['uri'], '?') === FALSE) ? '?' : '&';
                     $attrib['uri'] .= 'slideshow=true&slideshowAuto=' . (($this->getSetting('slideshow_colorbox_slideshow') == 'automatic') ? 'true':'false') . '&slideshowSpeed=' . $this->getSetting('slideshow_colorbox_slideshow_speed') . '&speed=' . $this->getSetting('slideshow_colorbox_speed') . '&transition=' . $this->getSetting('slideshow_colorbox_transition');
                   }
                   $items[$file_delta]->set($path, $attrib);
