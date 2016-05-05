@@ -48,7 +48,7 @@
       {% set style = (num) ? 'display:none' %}
       <div class="field-slideshow-slide field-slideshow-slide-{{1+num}} {{slide[num]['classes']}}" style="{{style}}">
         {% if colorbox_img_path is not empty and image_url == '' %}
-          <a href="{{ colorbox_img_path }}" {{ colorbox_attributes[num] }}>
+          <a href="{{ colorbox_img_path[num]['path'] }}" {{ colorbox_attributes[num] }}>
             {{ image[num] }}
           </a>
         {% else %}
