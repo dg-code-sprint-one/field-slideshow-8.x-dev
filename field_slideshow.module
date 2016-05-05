@@ -67,6 +67,7 @@ function template_preprocess_field_slideshow(&$variables) {
 
   // Add the JQuery plugins and the JS code
   $libraries_module_exists = \Drupal::moduleHandler()->moduleExists('libraries');
+  $colorbox_module_exists = \Drupal::moduleHandler()->moduleExists('colorbox');
   if ($libraries_module_exists) {
     $libraries_path = DRUPAL_ROOT . '/libraries';
     if (file_exists($libraries_path . '/jquery.cycle/jquery.cycle.all.min.js')) {
@@ -81,6 +82,11 @@ function template_preprocess_field_slideshow(&$variables) {
     $variables['#attached']['drupalSettings']['field_slideshow'] = array(
       'field-slideshow-' . $variables['slideshow_id'] => $js_variables,
     );
+    if ($colorbox_module_exists) {
+      $variables['#attached']['library'][] = 'colorbox/colorbox';
+      $variables['#attached']['library'][] = 'colorbox/default';
+      $variables['#attached']['library'][] = 'colorbox/init';
+    }
   }
 
   // Change order if needed
