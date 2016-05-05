@@ -473,7 +473,7 @@ class FieldSlideshow extends ImageFormatter {
                       'rel'   => 'field-slideshow[' . 'nid' . '-' . $entity->id() . ']',
                   );
 
-                  if ($this->getSetting('slideshow_caption') != ''  && isset($items[$file_delta]->getValue()['caption'])
+                  if ($this->getSetting('slideshow_caption') != ''  && isset($items[$file_delta]->getValue()['caption']))
                     $attrib['attributes']['title'] = $items[$file_delta]->getValue()['caption'];
                  
                   $colorbox_slideshow = $this->getSetting('slideshow_colorbox_slideshow');
