@@ -323,7 +323,9 @@ class FieldSlideshow extends ImageFormatter {
           'automatic' => t('Automatic'),
           'manual'    => t('Manual'),
         );
-        $link_type_message .= ', with Slideshow (' . $colorbox_slideshow[$this->getSetting('slideshow_colorbox_slideshow')] . ' - Speed: ' . $this->getSetting('slideshow_colorbox_slideshow_speed') . ')';
+        if (isset($colorbox_slideshow[$this->getSetting('slideshow_colorbox_slideshow')])) {
+          $link_type_message .= ', with Slideshow (' . $colorbox_slideshow[$this->getSetting('slideshow_colorbox_slideshow')] . ' - Speed: ' . $this->getSetting('slideshow_colorbox_slideshow_speed') . ')';
+        }
       }
 
       $link_type_message .= ')';
@@ -471,8 +473,13 @@ class FieldSlideshow extends ImageFormatter {
                       'rel'   => 'field-slideshow[' . 'nid' . '-' . $entity->id() . ']',
                   );
 
+<<<<<<< HEAD
                   if ($this->getSetting('slideshow_caption') != '')
                     $attrib['attributes']['title'] = $items[$file_delta]->getValue()['caption'];
+=======
+                  if ($this->getSetting('slideshow_caption') != '' && isset($items[$file_delta]->getValue()['caption']))
+                    $uri_arry['options']['attributes']['title'] = $items[$file_delta]->getValue()['caption'];
+>>>>>>> 29001bcdcee367081fa82e4098b24bca121dd3a4
                  
                   $colorbox_slideshow = $this->getSetting('slideshow_colorbox_slideshow');
                   if (isset($colorbox_slideshow) && $colorbox_slideshow != '') {

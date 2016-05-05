@@ -125,7 +125,12 @@ function template_preprocess_field_slideshow(&$variables) {
     $variables['slide'][$num]['classes'] = implode(' ', $classes);
 
     //Colorbox
-    $variables['colorbox_img_path'] = $item->getValue()['path']['uri'];
+
+    $variables['colorbox_img_path'] = '';
+    if (!is_object($item->getValue()['path'])) {
+      $variables['colorbox_img_path'][$num]['path'] = $item->getValue()['path']['uri'];
+    }
+
     $variables['image_url'] = $variables['image'][$num]['#url'];
     if ($variables['image_url'] == '' && $variables['colorbox_img_path'] != '') {
       $variables['colorbox_attributes'][$num] = new Attribute();
@@ -134,6 +139,7 @@ function template_preprocess_field_slideshow(&$variables) {
       $variables['colorbox_attributes'][$num]['class'] = $items[$num]->getValue()['path']['attributes']['class'];
     }
   }
+
 
   // Don't add controls if there's only one image
   if (count($items) == 1) {
