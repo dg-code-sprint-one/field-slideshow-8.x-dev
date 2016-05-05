@@ -4,7 +4,7 @@
  * @file
  *  Preprocess and theme hook functions.
  */
-
+use Drupal\Core\Template\Attribute;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Render\Element;
 use Drupal\image\ImageStyleInterface;
@@ -63,7 +63,7 @@ function field_slideshow_theme() {
  */
 function template_preprocess_field_slideshow(&$variables) {
 
-  $item = $variables['items'];
+  $items = $variables['items'];
 
   // Add the JQuery plugins and the JS code
   $libraries_module_exists = \Drupal::moduleHandler()->moduleExists('libraries');
@@ -85,14 +85,14 @@ function template_preprocess_field_slideshow(&$variables) {
 
   // Change order if needed
   if (isset($variables['order'])) {
-    $getSlide = $variables['items']->getValue();
+    $getSlide = $items->getValue();
     if ($variables['order'] == 'reverse') {
       $slide_order = array_reverse($getSlide);
-      $variables['items']->setValue($slide_order);
+      $items->setValue($slide_order);
     }
     elseif ($variables['order'] == 'random') {
       shuffle($getSlide);
-      $variables['items']->setValue($getSlide);
+      $items->setValue($getSlide);
     }
   }
 
@@ -105,32 +105,32 @@ function template_preprocess_field_slideshow(&$variables) {
   $variables['slides_max_width'] = 0;
   $variables['slides_max_height'] = 0;
   
-  foreach ($variables['items'] as $num => $item) {
+  foreach ($items as $num => $item) {
     $variables['image'][$num]['#item_attributes'] = array_merge(
       $variables['image'][$num]['#item_attributes'], array(
         'class'=> 'field-slideshow-image field-slideshow-image-' . (1 + $num)
       )
-    );
-    //kint($item->getValue()['path']['options']['attributes']['rel']);die;
-    /*if($item->getValue()['path']['path'] != '') {
-      //$variables['attributes'] = new Attribute();
-      $variables['attributes']['title'] = $item->getValue()['path']['options']['attributes']['title'];
-      $variables['attributes']['rel'] = $item->getValue()['path']['options']['attributes']['rel'];
-      $variables['attributes']['class'] = $item->getValue()['path']['options']['attributes']['class'];
-    }*/
-      
-     //kint($variables['attributes']);die;
-      
+    );      
     // Generate classes
     $field_slideshow_zebra = ($field_slideshow_zebra == 'odd') ? 'even' : 'odd';
     $classes[] = $field_slideshow_zebra;
     if ($num == 0) $classes[] = 'first';
-    elseif ($num == count($variables['items']) - 1) $classes[] = 'last';
+    elseif ($num == count($items) - 1) $classes[] = 'last';
     $variables['slide'][$num]['classes'] = implode(' ', $classes);
+
+    //Colorbox
+    $variables['colorbox_img_path'] = $item->getValue()['path']['path'];
+    $variables['image_url'] = $variables['image'][$num]['#url'];
+    if ($variables['image_url'] == '' && $variables['colorbox_img_path'] != '') {
+      $variables['colorbox_attributes'][$num] = new Attribute();
+      $variables['colorbox_attributes'][$num]['title'] = $items[$num]->getValue()['path']['options']['attributes']['title'];
+      $variables['colorbox_attributes'][$num]['rel'] = $items[$num]->getValue()['path']['options']['attributes']['rel'];
+      $variables['colorbox_attributes'][$num]['class'] = $items[$num]->getValue()['path']['options']['attributes']['class'];
+    }
   }
-  
+
   // Don't add controls if there's only one image
-  if (count($variables['items']) == 1) {
+  if (count($items) == 1) {
     $variables['controls'] = '';
     $variables['pager'] = '';
   }
@@ -156,7 +156,7 @@ function template_preprocess_field_slideshow_pager(&$variables) {
     }
 
     $thumbnails = array();
-    foreach ($variables['items'] as $num => $item) {
+    foreach ($items as $num => $item) {
       $thumbnail = array();
 
       $thumbnail['path'] = $item->entity->getFileUri();
@@ -197,9 +197,9 @@ function template_preprocess_field_slideshow_pager(&$variables) {
       '#items'       => $thumbnails,
       '#attributes'  => array(
         'id'    => 'field-slideshow-' . $variables['slideshow_id'] . '-pager',
-        'class' => 'field-slideshow-pager slides-' . count($variables['items']),
+        'class' => 'field-slideshow-pager slides-' . count($items),
       ),
     );
   }
-  $variables['items_count'] = count($variables['items']);
+  $variables['items_count'] = count($items);
 }

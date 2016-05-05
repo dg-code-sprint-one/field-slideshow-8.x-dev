@@ -468,7 +468,7 @@ class FieldSlideshow extends ImageFormatter {
                   //add correct attributes
                   $uri_arry['options']['attributes'] = array(
                       'class' => array('colorbox'),
-                      'rel'   => 'field-slideshow[' . 'nid' . '-' . $entity->id() . 'field-id' . ']',
+                      'rel'   => 'field-slideshow[' . 'nid' . '-' . $entity->id() . ']',
                   );
 
                   if ($this->getSetting('slideshow_caption') != '')
@@ -480,9 +480,7 @@ class FieldSlideshow extends ImageFormatter {
                     $uri_arry['path'] .= (strpos($uri_arry['path'], '?') === FALSE) ? '?' : '&';
                     $uri_arry['path'] .= 'slideshow=true&slideshowAuto=' . (($this->getSetting('slideshow_colorbox_slideshow') == 'automatic') ? 'true':'false') . '&slideshowSpeed=' . $this->getSetting('slideshow_colorbox_slideshow_speed') . '&speed=' . $this->getSetting('slideshow_colorbox_speed') . '&transition=' . $this->getSetting('slideshow_colorbox_transition');
                   }
-                  $images[$file_delta]['#url'] = Url::fromUri($uri_arry['path']);
                   $items[$file_delta]->set($path, $uri_arry);
-                  //kint($images[$file_delta]['#url']->getOptions());die;
                 }
               }
             break;
