@@ -473,13 +473,8 @@ class FieldSlideshow extends ImageFormatter {
                       'rel'   => 'field-slideshow[' . 'nid' . '-' . $entity->id() . ']',
                   );
 
-<<<<<<< HEAD
-                  if ($this->getSetting('slideshow_caption') != '')
+                  if ($this->getSetting('slideshow_caption') != ''  && isset($items[$file_delta]->getValue()['caption'])
                     $attrib['attributes']['title'] = $items[$file_delta]->getValue()['caption'];
-=======
-                  if ($this->getSetting('slideshow_caption') != '' && isset($items[$file_delta]->getValue()['caption']))
-                    $uri_arry['options']['attributes']['title'] = $items[$file_delta]->getValue()['caption'];
->>>>>>> 29001bcdcee367081fa82e4098b24bca121dd3a4
                  
                   $colorbox_slideshow = $this->getSetting('slideshow_colorbox_slideshow');
                   if (isset($colorbox_slideshow) && $colorbox_slideshow != '') {
