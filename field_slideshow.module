@@ -8,7 +8,7 @@
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Render\Element;
 use Drupal\image\ImageStyleInterface;
-
+use Drupal\Core\Url;
 /**
  * Implements hook_theme().
  */
@@ -17,7 +17,6 @@ function field_slideshow_theme() {
     'field_slideshow' => array(
       'variables'     => array(
         'items'                 => NULL,
-        //'item_settings'         => array(),
         'image_style'           => NULL,
         'image'                 => NULL,
         'order'                 => NULL,
@@ -112,6 +111,16 @@ function template_preprocess_field_slideshow(&$variables) {
         'class'=> 'field-slideshow-image field-slideshow-image-' . (1 + $num)
       )
     );
+    //kint($item->getValue()['path']['options']['attributes']['rel']);die;
+    /*if($item->getValue()['path']['path'] != '') {
+      //$variables['attributes'] = new Attribute();
+      $variables['attributes']['title'] = $item->getValue()['path']['options']['attributes']['title'];
+      $variables['attributes']['rel'] = $item->getValue()['path']['options']['attributes']['rel'];
+      $variables['attributes']['class'] = $item->getValue()['path']['options']['attributes']['class'];
+    }*/
+      
+     //kint($variables['attributes']);die;
+      
     // Generate classes
     $field_slideshow_zebra = ($field_slideshow_zebra == 'odd') ? 'even' : 'odd';
     $classes[] = $field_slideshow_zebra;
@@ -119,7 +128,7 @@ function template_preprocess_field_slideshow(&$variables) {
     elseif ($num == count($variables['items']) - 1) $classes[] = 'last';
     $variables['slide'][$num]['classes'] = implode(' ', $classes);
   }
-
+  
   // Don't add controls if there's only one image
   if (count($variables['items']) == 1) {
     $variables['controls'] = '';
