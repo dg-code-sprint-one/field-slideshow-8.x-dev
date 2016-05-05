@@ -110,7 +110,7 @@ function template_preprocess_field_slideshow(&$variables) {
   $variables['slide'] = array();
   $variables['slides_max_width'] = 0;
   $variables['slides_max_height'] = 0;
-  
+  $variables['colorbox_img_path'] = '';
   foreach ($items as $num => $item) {
     $variables['image'][$num]['#item_attributes'] = array_merge(
       $variables['image'][$num]['#item_attributes'], array(
@@ -125,7 +125,6 @@ function template_preprocess_field_slideshow(&$variables) {
     $variables['slide'][$num]['classes'] = implode(' ', $classes);
 
     //Colorbox
-    $variables['colorbox_img_path'] = '';
     if (!is_object($item->getValue()['path'])) {
       $variables['colorbox_img_path'][$num]['path'] = $item->getValue()['path']['uri'];
     }
