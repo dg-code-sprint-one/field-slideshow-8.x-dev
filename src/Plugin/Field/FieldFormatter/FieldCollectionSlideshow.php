@@ -81,7 +81,7 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
           '#type' => 'select',
           '#default_value' => $this->getSetting('slideshow_field_collection_image'),
           '#empty_option' => t('None'),
-          '#options' => $this->field_slideshow_get_fields(array('image'),$bundle,$fname),
+          '#options' => $this->field_slideshow_get_fields('image',$bundle,$fname),
           '#required' => TRUE,
         );
       }
@@ -103,6 +103,10 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       'title'   => t('Title text'),
       'alt'     => t('Alt text'),
     );
+
+    $caption_add = $this->field_slideshow_get_fields('string_long',$bundle,$fname);
+    $captions = array_merge($captions,$caption_add);
+
     $element['slideshow_caption'] = array(
       '#title'          => t('Caption'),
       '#type'           => 'select',
@@ -328,15 +332,22 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
 
-    foreach ($items as $delta => $item) {
-      if ($item->value !== NULL) {
-        $render_items[] = \Drupal::entityTypeManager()->getViewBuilder('field_collection_item')->view($item->getFieldCollectionItem());
-      }
-    }
-    kint($render_items[0]);die;
+    // foreach ($items as $delta => $item) {
+    //   if ($item->value !== NULL) {
+    //     $render_item = \Drupal::entityTypeManager()->getViewBuilder('field_collection_item');
+    //     kint($render_item);
+    //      die;
+    //   }
+    // }
+
+    // return $render_items;
+
+
+    $fields = FieldStorageConfig::loadByName('field_collection_item','field_slider_image');
     //kint($render_items[0]['#field_collection_item']->getFields());die;
     // get image html from parent method.
     $images = parent::viewElements($items, $langcode);
+
 
     // echo "<pre>";
     // print_r($images[0]);
@@ -379,29 +390,6 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
         }
         $item->set('caption',$item_settings[$delta]['caption']);
       }
-      // Set Image and Caption Link
-      // foreach ($links as $setting => $path) {
-      //   if ($this->getSetting($setting) != '') {
-      //     switch ($this->getSetting($setting)) {
-      //       case 'content':
-      //         $entity = $item->getEntity();
-      //         if (!$entity->isNew()) {
-      //           $uri = $entity->urlInfo();
-      //           $uri = !empty($uri) ? $uri : '';
-      //           $item->set($path, $uri);
-      //         }
-      //       break;
-      //       case 'file':
-      //         foreach ($files as $file_delta => $file) {
-      //           $image_uri = $file->getFileUri();
-      //           $uri = Url::fromUri(file_create_url($image_uri));
-      //           $uri = !empty($uri) ? $uri : '';
-      //           $items[$file_delta]->set($path, $uri);
-      //         }
-      //       break;
-      //     }
-      //   }
-      // }
     }
    
     $pager = array(
@@ -458,7 +446,7 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
     $map = $map['field_collection_item'];
     $field_machinename = array();
     foreach($map as $key => $value){
-      if($value['type'] == 'image'){
+      if($value['type'] == $support_type){
         $field_machinename[$key] =$value['bundles'];
       }
     }
@@ -469,30 +457,6 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       } 
       }         
     }
-    // kint($link);die;
-        
-    //$fields = FieldCollectionItem::load($field_name);
-    //$fields = Field::fieldInfo()->getField($field_name);
-  // switch ($entity_type) {
-  //   case 'media':
-  //     $bundle = 'file';
-  //     $bundle_instance = 'image';
-  //     $entity_label = t('Media field:');
-  //   break;
-  //   case 'field_collection':
-  //     $bundle = 'field_collection_item';
-  //     $bundle_instance = $field_name;
-  //     $entity_label = t('Field Collection field:');
-  //   break;
-  // }
-
-  // foreach ($fields as $name => $field) {
-  //   if (in_array($bundle, array_keys($field['bundles'])) && in_array($bundle_instance, $field['bundles'][$bundle]) && in_array($field['type'], $field_types)) {
-  //     $infos = field_info_instance($bundle, $name, $bundle_instance);
-  //     $links[$name] = $entity_label . ' ' . $infos['label'];
-  //   }
-  // }
-
-  return $link;
+    return $link;
   }
 }
