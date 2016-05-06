@@ -37,6 +37,7 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
    */
   public static function defaultSettings() {
     return array(
+      'image_field'               =>'',
       'image_style'               => '',
       'image_link'                      => '',
       'slideshow_colorbox_image_style'      => '',
@@ -75,18 +76,18 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
     $definitions = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', $bundle);
     foreach ($definitions as $field_name => $field_definition) {
       if ($field_definition->getType() == 'field_collection') {          
-        $fname = $field_definition->getName();
-        $element['image_field'] = array(
-          '#title' => t('Image Field'),
-          '#type' => 'select',
-          '#default_value' => $this->getSetting('slideshow_field_collection_image'),
-          '#empty_option' => t('None'),
-          '#options' => $this->field_slideshow_get_fields('image',$bundle,$fname),
-          '#required' => TRUE,
-        );
+        $fname = $field_definition->getName();      
       }
     }  
-
+    $field_options = $this->field_slideshow_get_fields('image',$bundle,$fname);
+    $element['image_field'] = array(
+      '#title' => t('Image Field'),
+      '#type' => 'select',
+      '#default_value' => $this->getSetting('image_field'),
+      '#empty_option' => t('None'),
+      '#options' => $field_options,
+      '#required' => TRUE,
+    );
     $element['image_style'] = array(
       '#title' => t('Image style'),
       '#type' => 'select',
@@ -94,7 +95,6 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       '#empty_option' => t('None (original image)'),
       '#options' => $image_styles,
     );
-
     $link_types = array(
       'content' => t('Content'),
       'file' => t('File'),
@@ -103,10 +103,8 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       'title'   => t('Title text'),
       'alt'     => t('Alt text'),
     );
-
     $caption_add = $this->field_slideshow_get_fields('string_long',$bundle,$fname);
     $captions = array_merge($captions,$caption_add);
-
     $element['slideshow_caption'] = array(
       '#title'          => t('Caption'),
       '#type'           => 'select',
@@ -252,7 +250,6 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
         ),
       ),
     );
-
     return $element;
   }
 
@@ -260,7 +257,6 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
    * {@inheritdoc}
    */
   public function settingsSummary() {
-
     // get summary of image_style and image_link from parent method.
     $summary = parent::settingsSummary();
 
@@ -275,6 +271,7 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       'title' => t('Title text'),
       'alt'   => t('Alt text'),
     );
+
     // Display this setting only if there's a caption.
     $caption_types_settings = $this->getSetting('slideshow_caption');
     if (isset($caption_types[$caption_types_settings])) {
@@ -292,10 +289,12 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       'reverse' => t('Reverse order'),
       'random'  => t('Random order'),
     );
+
     $orders_settings = $this->getSetting('slideshow_order');
     if (isset($orders[$orders_settings])) {
       $summary[] = $orders[$orders_settings];
     }
+
     $pause_button_text = "";
     $slideshow_controls_pause = $this->getSetting('slideshow_controls_pause');
     $slideshow_controls = $this->getSetting('slideshow_controls');
@@ -322,36 +321,23 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
         $summary[] = $pager_image_message;
       break;
     }
-
     return $summary;
   }
-
 
   /**
    * {@inheritdoc}
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
 
-    // foreach ($items as $delta => $item) {
-    //   if ($item->value !== NULL) {
-    //     $render_item = \Drupal::entityTypeManager()->getViewBuilder('field_collection_item');
-    //     kint($render_item);
-    //      die;
-    //   }
-    // }
 
-    // return $render_items;
+    $image_field = $this->getSetting('image_field');
+    $caption = $this->getSetting('slideshow_caption');
+    foreach ($items as $key => $item) {
+      kint($item->getFieldCollectionItem()->get($image_field));
+      die;
+      $render_item[] = $item->getFieldCollectionItem()->get($image_field)->view($display_options = array());
+    }
 
-
-    $fields = FieldStorageConfig::loadByName('field_collection_item','field_slider_image');
-    //kint($render_items[0]['#field_collection_item']->getFields());die;
-    // get image html from parent method.
-    $images = parent::viewElements($items, $langcode);
-
-
-    // echo "<pre>";
-    // print_r($images[0]);
-    // die;
     static $slideshow_count;
     $slideshow_count = (is_int($slideshow_count)) ? $slideshow_count + 1 : 1;
    // $files = $this->getEntitiesToView($items, $langcode);
@@ -388,6 +374,9 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
         elseif ($caption_settings == 'alt') {
           $item_settings[$delta]['caption'] = $item->getValue()['alt'];
         }
+        else {
+          $item_settings[$delta]['caption'] = $item->getFieldCollectionItem()->get($caption)->getValue($include_computed = false)[0]['value'];
+        }
         $item->set('caption',$item_settings[$delta]['caption']);
       }
     }
@@ -405,13 +394,12 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       '#theme'                => 'field_slideshow_controls',
       '#slideshow_id'         => $slideshow_count,
       '#controls_pause'       => $this->getSetting('slideshow_controls_pause'),
-    );   
-    
+    );       
     $elements[] = array(
       '#theme'                => 'field_slideshow',
       '#items'                => $items,
       '#image_style'          => $this->getSetting('image_style'),
-      '#image'                => $images,
+      '#image'                => $render_item,
       '#order'                => $this->getSetting('slideshow_order'),
       '#controls'             => ($this->getSetting('slideshow_controls') == 1 ? $controls : array()),
       '#controls_position'    => $this->getSetting('slideshow_controls_position'),
@@ -453,7 +441,7 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
     foreach ($field_machinename as $key => $values) {
       foreach ($values as $innerkey => $innervalue) {
       if ($innerkey == $field_name) {
-        $link[] = $key;
+        $link[$key] = $key;
       } 
       }         
     }
