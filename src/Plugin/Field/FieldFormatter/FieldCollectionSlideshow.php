@@ -99,6 +99,18 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       'content' => t('Content'),
       'file' => t('File'),
     );
+    $element['image_link'] = array(
+      '#title'          => t('Links image to'),
+      '#type'           => 'select',
+      '#default_value'  => $this->getSetting('image_link'),
+      '#empty_option'   => t('Nothing'),
+      '#options'        => $link_types,
+      // '#states' => array(
+      //   'invisible' => array(
+      //     ':input[name$="[settings_edit_form][settings][slideshow_caption]"]' => array('value' => ''),
+      //   ),
+      // ),
+    );
     $captions = array(
       'title'   => t('Title text'),
       'alt'     => t('Alt text'),
@@ -332,9 +344,8 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
 
     $image_field = $this->getSetting('image_field');
     $caption = $this->getSetting('slideshow_caption');
+    $alt = array();
     foreach ($items as $key => $item) {
-      kint($item->getFieldCollectionItem()->get($image_field));
-      die;
       $render_item[] = $item->getFieldCollectionItem()->get($image_field)->view($display_options = array());
     }
 
@@ -356,7 +367,7 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
 
     $elements = array();
     $entity = array();
-
+    $files = array();
     $links = array(
       'image_link'          => 'path',
       'slideshow_caption_link'  => 'caption_path',
@@ -369,15 +380,38 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       if ($this->getSetting('slideshow_caption') != '') {
         $caption_settings = $this->getSetting('slideshow_caption');
         if ($caption_settings == 'title') {
-          $item_settings[$delta]['caption'] = $item->getValue()['title'];
+          $item_settings[$delta]['caption'] = $item->getFieldCollectionItem()->get($image_field)->getValue($include_computed = false)[0]['title'];
         } 
         elseif ($caption_settings == 'alt') {
-          $item_settings[$delta]['caption'] = $item->getValue()['alt'];
+          $item_settings[$delta]['caption'] =$item->getFieldCollectionItem()->get($image_field)->getValue($include_computed = false)[0]['alt'];
         }
         else {
           $item_settings[$delta]['caption'] = $item->getFieldCollectionItem()->get($caption)->getValue($include_computed = false)[0]['value'];
         }
         $item->set('caption',$item_settings[$delta]['caption']);
+      }
+      // Set Image and Caption Link
+      foreach ($links as $setting => $path) {
+        if ($this->getSetting($setting) != '') {
+          switch ($this->getSetting($setting)) {
+            case 'content':             
+              $entity = $item->getEntity();               
+              if (!$entity->isNew()) {
+                $uri = $entity->urlInfo();
+                $uri = !empty($uri) ? $uri : '';
+                $item->set($path, $uri);
+              }
+            break;
+            case 'file':
+              foreach ($files as $file_delta => $file) {
+                $image_uri = $file->getFileUri();
+                $uri = Url::fromUri(file_create_url($image_uri));
+                $uri = !empty($uri) ? $uri : '';
+                $items[$file_delta]->set($path, $uri);
+              }
+            break;
+          }
+        }
       }
     }
    
