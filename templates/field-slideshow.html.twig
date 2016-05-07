@@ -51,6 +51,10 @@
           <a href="{{ colorbox_img_path[num]['path'] }}" {{ colorbox_attributes[num] }}>
             {{ image[num] }}
           </a>
+        {% elseif fc_url is not empty %}
+          <a href="{{ fc[num]['path'] }}">
+            {{ image[num] }}
+          </a>        
         {% else %}
           {{ image[num] }}
         {% endif %}

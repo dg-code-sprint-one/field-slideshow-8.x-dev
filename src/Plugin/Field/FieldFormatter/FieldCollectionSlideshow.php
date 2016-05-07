@@ -37,9 +37,9 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
    */
   public static function defaultSettings() {
     return array(
-      'image_field'               =>'',
-      'image_style'               => '',
-      'image_link'                      => '',
+      'image_field'                         =>'',
+      'image_style'                         => '',
+      'image_link'                          => '',
       'slideshow_colorbox_image_style'      => '',
       'slideshow_colorbox_slideshow'        => '',
       'slideshow_colorbox_slideshow_speed'  => '4000',
@@ -67,6 +67,7 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
    * {@inheritdoc}
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
+
     $image_styles = image_style_options(FALSE);
     // get image_style and image_link form elements from parent method.
     $element = parent::settingsForm($form, $form_state);
@@ -81,23 +82,23 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
     }  
     $field_options = $this->field_slideshow_get_fields('image',$bundle,$fname);
     $element['image_field'] = array(
-      '#title' => t('Image Field'),
-      '#type' => 'select',
+      '#title'         => t('Image Field'),
+      '#type'          => 'select',
       '#default_value' => $this->getSetting('image_field'),
-      '#empty_option' => t('None'),
-      '#options' => $field_options,
-      '#required' => TRUE,
+      '#empty_option'  => t('None'),
+      '#options'       => $field_options,
+      '#required'      => TRUE,
     );
     $element['image_style'] = array(
-      '#title' => t('Image style'),
-      '#type' => 'select',
+      '#title'         => t('Image style'),
+      '#type'          => 'select',
       '#default_value' => $this->getSetting('image_style'),
-      '#empty_option' => t('None (original image)'),
-      '#options' => $image_styles,
+      '#empty_option'  => t('None (original image)'),
+      '#options'       => $image_styles,
     );
     $link_types = array(
       'content' => t('Content'),
-      'file' => t('File'),
+      'file'    => t('File'),
     );
     $element['image_link'] = array(
       '#title'          => t('Links image to'),
@@ -105,11 +106,11 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       '#default_value'  => $this->getSetting('image_link'),
       '#empty_option'   => t('Nothing'),
       '#options'        => $link_types,
-      // '#states' => array(
-      //   'invisible' => array(
-      //     ':input[name$="[settings_edit_form][settings][slideshow_caption]"]' => array('value' => ''),
-      //   ),
-      // ),
+      '#states'         => array(
+        'invisible' => array(
+          ':input[name$="[settings_edit_form][settings][image_field]"]' => array('value' => ''),
+        ),
+      ),
     );
     $captions = array(
       'title'   => t('Title text'),
@@ -137,10 +138,10 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       ),
     );
     $element['slideshow_fx'] = array(
-      '#title'          => t('Transition effect'),
-      '#type'           => 'select',
-      '#default_value'  => $this->getSetting('slideshow_fx'),
-      '#options'        => array(
+      '#title'        => t('Transition effect'),
+      '#type'         => 'select',
+      '#default_value'=> $this->getSetting('slideshow_fx'),
+      '#options'      => array(
         'blindX'      => t('blindX'),
         'blindY'      => t('blindY'),
         'blindZ'      => t('blindZ'),
@@ -269,6 +270,7 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
    * {@inheritdoc}
    */
   public function settingsSummary() {
+
     // get summary of image_style and image_link from parent method.
     $summary = parent::settingsSummary();
 
@@ -341,14 +343,12 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
 
-
     $image_field = $this->getSetting('image_field');
     $caption = $this->getSetting('slideshow_caption');
     $alt = array();
     foreach ($items as $key => $item) {
       $render_item[] = $item->getFieldCollectionItem()->get($image_field)->view($display_options = array());
     }
-
     static $slideshow_count;
     $slideshow_count = (is_int($slideshow_count)) ? $slideshow_count + 1 : 1;
    // $files = $this->getEntitiesToView($items, $langcode);
@@ -369,11 +369,11 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
     $entity = array();
     $files = array();
     $links = array(
-      'image_link'          => 'path',
+      'image_link'              => 'path',
       'slideshow_caption_link'  => 'caption_path',
     );
 
-     // Loop through required links (because image and caption can have different links).
+    // Loop through required links (because image and caption can have different links).
     foreach ($items as $delta => $item) {
       $uri = array();
       // Set Image caption
@@ -394,29 +394,32 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       foreach ($links as $setting => $path) {
         if ($this->getSetting($setting) != '') {
           switch ($this->getSetting($setting)) {
-            case 'content':        
-              
+            case 'content':     
+            die;        
               $entity = $item->getEntity();               
               if (!$entity->isNew()) {
-                $uri = $entity->urlInfo();
-                $uri = !empty($uri) ? $uri : '';
+                $uri = $entity->urlInfo();                
+                $uri = !empty($uri) ? $uri : '';                         
                 if ($setting == 'image_link') {
-                  // kint($item->getFieldCollectionItem()->get($image_field)->first()->set($path,$uri));
-                  // die;
-                  $item->getFieldCollectionItem()->get($image_field)->getIterator()[0]->set($path,$uri); 
+                 $item->set('fc_path',$uri);
                 }
-                elseif ($setting == 'slideshow_caption_link') {
+                elseif ($setting == 'slideshow_caption_link'){
                   $item->set($path,$uri);
                 }
               }
             break;
             case 'file':
-              foreach ($files as $file_delta => $file) {
-                $image_uri = $file->getFileUri();
-                $uri = Url::fromUri(file_create_url($image_uri));
-                $uri = !empty($uri) ? $uri : '';
-                $items[$file_delta]->set($path, $uri);
-              }
+
+            kint($item->getFieldCollectionItem()->get($image_field)->first());
+            die;
+            kint();
+                   $item->set('fc_file_path',$uri);
+              // foreach ($files as $file_delta => $file) {
+              //   $image_uri = $file->getFileUri();
+              //   $uri = Url::fromUri(file_create_url($image_uri));
+              //   $uri = !empty($uri) ? $uri : '';
+              //   $items[$file_delta]->set($path, $uri);
+              // }
             break;
           }
         }

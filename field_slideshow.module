@@ -76,10 +76,6 @@ function template_preprocess_field_slideshow(&$variables) {
     elseif (file_exists($libraries_path . '/jquery.cycle/jquery.cycle.all.js')) {
       $variables['#attached']['library'][] = 'field_slideshow/field_slideshow.jquery.cycle.all';
     }
-    if (file_exists($libraries_path . '/jquery.imagesloaded/jquery.imagesloaded.js')) {
-      $variables['#attached']['library'][] = 'field_slideshow/field_slideshow.jquery.imagesloaded';
-    }
-    
     // Add js variables
     $js_variables = $variables["js_variables"];
     $variables['#attached']['library'][] = 'field_slideshow/field_slideshow.view';
@@ -87,11 +83,9 @@ function template_preprocess_field_slideshow(&$variables) {
       'field-slideshow-' . $variables['slideshow_id'] => $js_variables,
     );
     if ($colorbox_module_exists) {
-      $colorbox_attachment = \Drupal::service('colorbox.attachment');
-      $colorbox_applicable = $colorbox_attachment->isApplicable();
-      if ($colorbox_applicable) {
-        $colorbox_attachment->attach($variables);
-      }
+      $variables['#attached']['library'][] = 'colorbox/colorbox-dev';
+      $variables['#attached']['library'][] = 'colorbox/default';
+      $variables['#attached']['library'][] = 'colorbox/init';
     }
   }
 
@@ -117,7 +111,16 @@ function template_preprocess_field_slideshow(&$variables) {
   $variables['slides_max_width'] = 0;
   $variables['slides_max_height'] = 0;
   $variables['colorbox_img_path'] = '';
-  foreach ($items as $num => $item) {
+  foreach ($items as $num => $item) {   
+    if($item->getValue()['fc_path'] != ''){
+      die;
+      $variables['fc_url'] = 1;
+      $node_path = \Drupal::url($item->getValue()['fc_path']->getRouteName(),$item->getValue()['fc_path']->getRouteParameters());      
+      $variables['fc'][$num]['path'] = $node_path;     
+    }
+    else{
+      $variables['fc_url'] = '';
+    }
     $variables['image'][$num]['#item_attributes'] = array_merge(
       $variables['image'][$num]['#item_attributes'], array(
         'class'=> 'field-slideshow-image field-slideshow-image-' . (1 + $num)
