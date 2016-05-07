@@ -76,6 +76,10 @@ function template_preprocess_field_slideshow(&$variables) {
     elseif (file_exists($libraries_path . '/jquery.cycle/jquery.cycle.all.js')) {
       $variables['#attached']['library'][] = 'field_slideshow/field_slideshow.jquery.cycle.all';
     }
+    if (file_exists($libraries_path . '/jquery.imagesloaded/jquery.imagesloaded.js')) {
+      $variables['#attached']['library'][] = 'field_slideshow/field_slideshow.jquery.imagesloaded';
+    }
+    
     // Add js variables
     $js_variables = $variables["js_variables"];
     $variables['#attached']['library'][] = 'field_slideshow/field_slideshow.view';

@@ -8,6 +8,11 @@ field_slideshow.jquery.cycle.all:
   js:
     /libraries/jquery.cycle/jquery.cycle.all.js: {}
 
+field_slideshow.jquery.imagesloaded:
+  version: VERSION
+  js:
+    /libraries/jquery.imagesloaded/jquery.imagesloaded.js: {}
+
 field_slideshow.jquery.carousel.min:
   version: VERSION
   js:
