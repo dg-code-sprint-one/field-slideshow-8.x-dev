@@ -83,9 +83,11 @@ function template_preprocess_field_slideshow(&$variables) {
       'field-slideshow-' . $variables['slideshow_id'] => $js_variables,
     );
     if ($colorbox_module_exists) {
-      $variables['#attached']['library'][] = 'colorbox/colorbox-dev';
-      $variables['#attached']['library'][] = 'colorbox/default';
-      $variables['#attached']['library'][] = 'colorbox/init';
+      $colorbox_attachment = \Drupal::service('colorbox.attachment');
+      $colorbox_applicable = $colorbox_attachment->isApplicable();
+      if ($colorbox_applicable) {
+        $colorbox_attachment->attach($variables);
+      }
     }
   }
 
@@ -224,4 +226,42 @@ function template_preprocess_field_slideshow_pager(&$variables) {
     );
   }
   $variables['items_count'] = count($items);
+}
+
+/**
+ * Implements hook_colorbox_settings_alter()
+ */
+function field_slideshow_colorbox_settings_alter(&$settings, &$style) {
+  $node = \Drupal::request()->attributes->get('node');
+  if ($node) {
+    //kint($node::load($node->id()));
+    $type = $node->getType();
+    $mode = \Drupal::service('entity_display.repository')->getViewModes('node');
+    //kint($mode);
+    $config_entity_name = 'core.entity_view_display.node.' . $type . '.default';
+    $query = db_select('config', 'c');
+    $result = $query->fields('c')
+      ->condition('name', $config_entity_name)
+      ->execute()
+      ->fetchAssoc();
+    $formatter_data = unserialize($result['data']);
+    
+    foreach ($formatter_data['content'] as $content) {
+      
+      if (isset($content['type']) && $content['type'] == 'slideshow') {
+        //print_r($content);exit;
+        $content_settings = $content['settings'];
+        $colorbox_slideshow = $content_settings['slideshow_colorbox_slideshow'];
+        if (isset($colorbox_slideshow) && $colorbox_slideshow != '' && $colorbox_slideshow == 'automatic') {
+           $settings['slideshow'] = TRUE;
+           $settings['slideshowAuto'] = TRUE;
+           $settings['transition'] = $content_settings['slideshow_colorbox_transition'];
+           $settings['transition_speed'] = $content_settings['slideshow_colorbox_speed'];
+           $settings['slideshowSpeed'] = $content_settings['slideshow_colorbox_slideshow_speed'];
+        }  
+      }
+    }
+  }
+
+  //slideshow=true&slideshowAuto=true&slideshowSpeed=4000&speed=350&transition=elastic
 }
