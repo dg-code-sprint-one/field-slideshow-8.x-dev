@@ -394,12 +394,20 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       foreach ($links as $setting => $path) {
         if ($this->getSetting($setting) != '') {
           switch ($this->getSetting($setting)) {
-            case 'content':             
+            case 'content':        
+              
               $entity = $item->getEntity();               
               if (!$entity->isNew()) {
                 $uri = $entity->urlInfo();
                 $uri = !empty($uri) ? $uri : '';
-                $item->set($path, $uri);
+                if ($setting == 'image_link') {
+                  // kint($item->getFieldCollectionItem()->get($image_field)->first()->set($path,$uri));
+                  // die;
+                  $item->getFieldCollectionItem()->get($image_field)->getIterator()[0]->set($path,$uri); 
+                }
+                elseif ($setting == 'slideshow_caption_link') {
+                  $item->set($path,$uri);
+                }
               }
             break;
             case 'file':
