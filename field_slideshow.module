@@ -83,7 +83,7 @@ function template_preprocess_field_slideshow(&$variables) {
       'field-slideshow-' . $variables['slideshow_id'] => $js_variables,
     );
     if ($colorbox_module_exists) {
-      $variables['#attached']['library'][] = 'colorbox/colorbox';
+      $variables['#attached']['library'][] = 'colorbox/colorbox-dev';
       $variables['#attached']['library'][] = 'colorbox/default';
       $variables['#attached']['library'][] = 'colorbox/init';
     }
@@ -92,7 +92,6 @@ function template_preprocess_field_slideshow(&$variables) {
   // Change order if needed
   if (isset($variables['order'])) {
     $getSlide = $items->getValue();
-    //kint($getSlide);
     if ($variables['order'] == 'reverse') {
       $slide_order = array_reverse($getSlide);
       $items->setValue($slide_order);

@@ -7,6 +7,8 @@
 
 namespace Drupal\field_slideshow\Plugin\Field\FieldFormatter;
 
+use Drupal\node\Entity\Node;
+use Drupal\field\FieldConfigInterface;
 use Drupal\image\Plugin\Field\FieldFormatter\ImageFormatter;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\Core\Form\FormStateInterface;
@@ -73,7 +75,7 @@ class FieldSlideshow extends ImageFormatter {
       'alt'     => t('Alt text'),
     );
     if(\Drupal::moduleHandler()->moduleExists('colorbox')) {
-      $element['image_link']['#options']['colorbox'] = 'Colorbox';
+      $element['image_link']['#options']['colorbox'] = t('Colorbox');
       $element['slideshow_colorbox_image_style'] = array(
         '#title'          => t('Colorbox image style'),
         '#type'           => 'select',
@@ -396,7 +398,7 @@ class FieldSlideshow extends ImageFormatter {
 
     // get image html from parent method.
     $images = parent::viewElements($items, $langcode);
-    
+  
     static $slideshow_count;
     $slideshow_count = (is_int($slideshow_count)) ? $slideshow_count + 1 : 1;
     $files = $this->getEntitiesToView($items, $langcode);
@@ -470,7 +472,7 @@ class FieldSlideshow extends ImageFormatter {
                   //add correct attributes
                   $attrib['attributes'] = array(
                       'class' => array('colorbox'),
-                      'rel'   => 'field-slideshow[' . 'nid' . '-' . $entity->id() . ']',
+                      'rel'   => 'field-slideshow[' . 'nid' . '-' . $entity->id() . ']image',
                   );
 
                   if ($this->getSetting('slideshow_caption') != ''  && isset($items[$file_delta]->getValue()['caption']))
@@ -479,6 +481,7 @@ class FieldSlideshow extends ImageFormatter {
                   $colorbox_slideshow = $this->getSetting('slideshow_colorbox_slideshow');
                   if (isset($colorbox_slideshow) && $colorbox_slideshow != '') {
                     $attrib['attributes']['class'] = array('colorbox-load');
+                    $attrib['attributes']['class'] = array('colorbox-load', 'cboxElement');
                     $attrib['uri'] .= (strpos($attrib['uri'], '?') === FALSE) ? '?' : '&';
                     $attrib['uri'] .= 'slideshow=true&slideshowAuto=' . (($this->getSetting('slideshow_colorbox_slideshow') == 'automatic') ? 'true':'false') . '&slideshowSpeed=' . $this->getSetting('slideshow_colorbox_slideshow_speed') . '&speed=' . $this->getSetting('slideshow_colorbox_speed') . '&transition=' . $this->getSetting('slideshow_colorbox_transition');
                   }
@@ -490,6 +493,7 @@ class FieldSlideshow extends ImageFormatter {
         }
       }
     }
+
       
     $pager = array(
       '#theme'                => 'field_slideshow_pager',
