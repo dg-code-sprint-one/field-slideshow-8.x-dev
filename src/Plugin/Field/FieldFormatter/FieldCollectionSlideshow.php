@@ -395,7 +395,6 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
         if ($this->getSetting($setting) != '') {
           switch ($this->getSetting($setting)) {
             case 'content':     
-            die;        
               $entity = $item->getEntity();               
               if (!$entity->isNew()) {
                 $uri = $entity->urlInfo();                
@@ -409,11 +408,7 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
               }
             break;
             case 'file':
-
-            kint($item->getFieldCollectionItem()->get($image_field)->first());
-            die;
-            kint();
-                   $item->set('fc_file_path',$uri);
+              $item->set('fc_file_path',$uri);
               // foreach ($files as $file_delta => $file) {
               //   $image_uri = $file->getFileUri();
               //   $uri = Url::fromUri(file_create_url($image_uri));
@@ -431,9 +426,7 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       '#items'                => $items,
       '#pager'                => $this->getSetting('slideshow_pager'),
       '#pager_image_style'    => $this->getSetting('slideshow_pager_image_style'),
-      //'#carousel_image_style' => $this->getSetting('slideshow_carousel_image_style'),
       '#slideshow_id'         => $slideshow_count,
-      //'#carousel_skin'        => $this->getSetting('slideshow_carousel_skin'),
     );
     $controls = array(
       '#theme'                => 'field_slideshow_controls',
@@ -458,14 +451,6 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
         'timeout'              => $this->getSetting('slideshow_timeout'),
         'pause'                => $this->getSetting('slideshow_pause'),
         'start_on_hover'       => $this->getSetting('slideshow_start_on_hover'),
-        // 'carousel_visible'     => $this->getSetting('slideshow_carousel_visible'),
-        // 'carousel_scroll'      => $this->getSetting('slideshow_carousel_scroll'),
-        // 'carousel_speed'       => $this->getSetting('slideshow_carousel_speed'),
-        // 'carousel_vertical'    => $this->getSetting('slideshow_carousel_vertical'),
-        // 'carousel_circular'    => $this->getSetting('slideshow_carousel_circular'),
-        // 'carousel_follow'      => $this->getSetting('slideshow_carousel_follow'),
-        // 'carousel_skin'        => $this->getSetting('slideshow_carousel_skin'),
-        // Need to access the following variables in js too
         'pager'                => $this->getSetting('slideshow_pager'),
         'controls'             => $this->getSetting('slideshow_controls') === 1 ? $controls : array(),
       ),
