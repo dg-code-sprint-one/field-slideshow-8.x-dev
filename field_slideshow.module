@@ -87,9 +87,11 @@ function template_preprocess_field_slideshow(&$variables) {
       'field-slideshow-' . $variables['slideshow_id'] => $js_variables,
     );
     if ($colorbox_module_exists) {
-      $variables['#attached']['library'][] = 'colorbox/colorbox-dev';
-      $variables['#attached']['library'][] = 'colorbox/default';
-      $variables['#attached']['library'][] = 'colorbox/init';
+      $colorbox_attachment = \Drupal::service('colorbox.attachment');
+      $colorbox_applicable = $colorbox_attachment->isApplicable();
+      if ($colorbox_applicable) {
+        $colorbox_attachment->attach($variables);
+      }
     }
   }
 
