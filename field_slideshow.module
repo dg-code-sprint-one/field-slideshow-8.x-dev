@@ -113,7 +113,6 @@ function template_preprocess_field_slideshow(&$variables) {
   $variables['colorbox_img_path'] = '';
   foreach ($items as $num => $item) {   
     if($item->getValue()['fc_path'] != ''){
-      die;
       $variables['fc_url'] = 1;
       $node_path = \Drupal::url($item->getValue()['fc_path']->getRouteName(),$item->getValue()['fc_path']->getRouteParameters());      
       $variables['fc'][$num]['path'] = $node_path;     
@@ -146,7 +145,6 @@ function template_preprocess_field_slideshow(&$variables) {
       $variables['colorbox_attributes'][$num]['class'] = $items[$num]->getValue()['path']['attributes']['class'];
     }
   }
-
 
   // Don't add controls if there's only one image
   if (count($items) == 1) {
