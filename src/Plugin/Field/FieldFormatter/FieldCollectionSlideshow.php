@@ -516,6 +516,38 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
                 $item->set($path,$uri);
               }              
             break;
+              case 'colorbox': 
+
+              $attrib = array();     
+              // check if we need a thumbnail and change the link
+              if ($this->getSetting('slideshow_colorbox_image_style') != '') {        
+                $entity = $item->getEntity();
+                $target_id = $item->getFieldCollectionItem()->get($image_field)->first()->getValue()['target_id'];
+                $file = File::load($target_id)->getFileUri();    
+                $uri = Url::fromUri(file_create_url($file));
+                $uri = !empty($uri) ? $uri : '';  
+                $uri = ImageStyle::load($this->getSetting('slideshow_colorbox_image_style'))->buildUrl($file);
+                $attrib['uri'] = $uri;
+
+                //add correct attributes
+                $attrib['attributes'] = array(
+                    'class' => array('colorbox'),
+                    'rel'   => 'field-slideshow[' . 'nid' . '-' . $entity->id() . ']',
+                );
+
+                if ($this->getSetting('slideshow_caption') != ''  && $item->getFieldCollectionItem()->get($caption)->getValue($include_computed = false)[0]['value'] !== null)
+                  $attrib['attributes']['title'] =  $item->getFieldCollectionItem()->get($caption)->getValue($include_computed = false)[0]['value'];                 
+                $colorbox_slideshow = $this->getSetting('slideshow_colorbox_slideshow');
+
+                if (isset($colorbox_slideshow) && $colorbox_slideshow != '') {
+                  $attrib['attributes']['class'] = array('colorbox');
+                  $attrib['uri'] .= (strpos($attrib['uri'], '?') === FALSE) ? '?' : '&';
+                  $attrib['uri'] .= 'slideshow=true&slideshowAuto=' . (($this->getSetting('slideshow_colorbox_slideshow') == 'automatic') ? 'true':'false') . '&slideshowSpeed=' . $this->getSetting('slideshow_colorbox_slideshow_speed') . '&speed=' . $this->getSetting('slideshow_colorbox_speed') . '&transition=' . $this->getSetting('slideshow_colorbox_transition');
+                }
+                $file_delta = $item->getName();
+                $items[$file_delta]->set($path, $attrib);
+              }               
+            break;
           }
         }
       }
