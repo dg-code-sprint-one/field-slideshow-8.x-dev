@@ -83,11 +83,9 @@ function template_preprocess_field_slideshow(&$variables) {
       'field-slideshow-' . $variables['slideshow_id'] => $js_variables,
     );
     if ($colorbox_module_exists) {
-      $colorbox_attachment = \Drupal::service('colorbox.attachment');
-      $colorbox_applicable = $colorbox_attachment->isApplicable();
-      if ($colorbox_applicable) {
-        $colorbox_attachment->attach($variables);
-      }
+      $variables['#attached']['library'][] = 'colorbox/colorbox-dev';
+      $variables['#attached']['library'][] = 'colorbox/default';
+      $variables['#attached']['library'][] = 'colorbox/init';
     }
   }
 
@@ -113,21 +111,33 @@ function template_preprocess_field_slideshow(&$variables) {
   $variables['slides_max_width'] = 0;
   $variables['slides_max_height'] = 0;
   $variables['colorbox_img_path'] = '';
-  foreach ($items as $num => $item) {   
-    if($item->getValue()['fc_path'] != ''){
-      $variables['fc_url'] = 1;
-      $node_path = \Drupal::url($item->getValue()['fc_path']->getRouteName(),$item->getValue()['fc_path']->getRouteParameters());      
-      $variables['fc'][$num]['path'] = $node_path;     
+  foreach ($items as $num => $item) {  
+    if(!empty($item->getValue()['fc_path'])) {
+      if($item->getValue()['fc_path'] != ''){     
+        $variables['fc_url'] = 1;
+        $node_path = \Drupal::url($item->getValue()['fc_path']->getRouteName(),$item->getValue()['fc_path']->getRouteParameters());      
+        $variables['fc'][$num]['path'] = $node_path;     
+      }
+      else{
+        $variables['fc_url'] = '';
+      }
+      $variables['image'][$num]['#item_attributes'] = array_merge(
+        $variables['image'][$num]['#item_attributes'], array(
+          'class'=> 'field-slideshow-image field-slideshow-image-' . (1 + $num)
+        )
+      );  
     }
-    else{
-      $variables['fc_url'] = '';
-    }
-    $variables['image'][$num]['#item_attributes'] = array_merge(
-      $variables['image'][$num]['#item_attributes'], array(
-        'class'=> 'field-slideshow-image field-slideshow-image-' . (1 + $num)
-      )
-    );      
-    // Generate classes
+    elseif (!empty($item->getValue()['fc_file_path'])){
+      if($item->getValue()['fc_file_path'] != ''){ 
+        $variables['fc_url'] = 1;
+        $file_path = $item->getValue()['fc_file_path']->getUri();        
+        $variables['fc'][$num]['path'] = $file_path;
+      }
+      else{
+        $variables['fc_url'] = '';
+      }
+    }    
+      // Generate classes
     $field_slideshow_zebra = ($field_slideshow_zebra == 'odd') ? 'even' : 'odd';
     $classes[] = $field_slideshow_zebra;
     if ($num == 0) $classes[] = 'first';
@@ -147,6 +157,7 @@ function template_preprocess_field_slideshow(&$variables) {
       $variables['colorbox_attributes'][$num]['class'] = $items[$num]->getValue()['path']['attributes']['class'];
     }
   }
+
 
   // Don't add controls if there's only one image
   if (count($items) == 1) {
@@ -224,42 +235,4 @@ function template_preprocess_field_slideshow_pager(&$variables) {
     );
   }
   $variables['items_count'] = count($items);
-}
-
-/**
- * Implements hook_colorbox_settings_alter()
- */
-function field_slideshow_colorbox_settings_alter(&$settings, &$style) {
-  $node = \Drupal::request()->attributes->get('node');
-  if ($node) {
-    //kint($node::load($node->id()));
-    $type = $node->getType();
-    $mode = \Drupal::service('entity_display.repository')->getViewModes('node');
-    //kint($mode);
-    $config_entity_name = 'core.entity_view_display.node.' . $type . '.default';
-    $query = db_select('config', 'c');
-    $result = $query->fields('c')
-      ->condition('name', $config_entity_name)
-      ->execute()
-      ->fetchAssoc();
-    $formatter_data = unserialize($result['data']);
-    
-    foreach ($formatter_data['content'] as $content) {
-      
-      if (isset($content['type']) && $content['type'] == 'slideshow') {
-        //print_r($content);exit;
-        $content_settings = $content['settings'];
-        $colorbox_slideshow = $content_settings['slideshow_colorbox_slideshow'];
-        if (isset($colorbox_slideshow) && $colorbox_slideshow != '' && $colorbox_slideshow == 'automatic') {
-           $settings['slideshow'] = TRUE;
-           $settings['slideshowAuto'] = TRUE;
-           $settings['transition'] = $content_settings['slideshow_colorbox_transition'];
-           $settings['transition_speed'] = $content_settings['slideshow_colorbox_speed'];
-           $settings['slideshowSpeed'] = $content_settings['slideshow_colorbox_slideshow_speed'];
-        }  
-      }
-    }
-  }
-
-  //slideshow=true&slideshowAuto=true&slideshowSpeed=4000&speed=350&transition=elastic
 }
