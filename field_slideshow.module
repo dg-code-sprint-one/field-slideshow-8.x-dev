@@ -51,6 +51,7 @@ function field_slideshow_theme() {
         'carousel_image_style'  => NULL,
         'slideshow_id'          => NULL,
         'carousel_skin'         => NULL,
+        'check' => NULL,
       ),
       'path' => drupal_get_path('module', 'field_slideshow') . '/templates',
       'render element'     => 'field_slideshow_pager',
@@ -191,8 +192,13 @@ function template_preprocess_field_slideshow_pager(&$variables) {
     $thumbnails = array();
     foreach ($items as $num => $item) {
       $thumbnail = array();
-
-      $thumbnail['path'] = $item->entity->getFileUri();
+      if(!empty($variables['check'])){die;
+        //kint($item->getValue()['fc_thumbnail_path']) ;die;
+        $thumbnail['path'] =  $item->getValue()['fc_thumbnail_path'];
+      }
+      else{
+        $thumbnail['path'] = $item->entity->getFileUri();        
+      }
       $thumbnail['attributes'] = $item->_attributes;
       $thumbnail['attributes']['class'] = array(
         'field-slideshow-thumbnail', 

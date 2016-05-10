@@ -532,11 +532,11 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
                 //add correct attributes
                 $attrib['attributes'] = array(
                     'class' => array('colorbox'),
-                    'rel'   => 'field-slideshow[' . 'nid' . '-' . $entity->id() . ']',
+                    'rel'   => 'field-collection-slideshow[' . 'nid' . '-' . $entity->id() . ']',
                 );
 
-                if ($this->getSetting('slideshow_caption') != ''  && $item->getFieldCollectionItem()->get($caption)->getValue($include_computed = false)[0]['value'] !== null)
-                  $attrib['attributes']['title'] =  $item->getFieldCollectionItem()->get($caption)->getValue($include_computed = false)[0]['value'];                 
+                if ($this->getSetting('slideshow_caption') != ''  &&  isset($item_settings[$delta]['caption']))
+                  $attrib['attributes']['title'] =  $item_settings[$delta]['caption'];                 
                 $colorbox_slideshow = $this->getSetting('slideshow_colorbox_slideshow');
 
                 if (isset($colorbox_slideshow) && $colorbox_slideshow != '') {
@@ -551,14 +551,21 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
           }
         }
       }
+    if($this->getSetting('slideshow_pager') == 'image'){
+      $target_id = $item->getFieldCollectionItem()->get($image_field)->first()->getValue()['target_id'];
+      $file = File::load($target_id)->getFileUri();               
+      $item->set('fc_thumbnail_path',$file);      
     }
+    }
+
     $pager = array(
       '#theme'                => 'field_slideshow_pager',
       '#items'                => $items,
       '#pager'                => $this->getSetting('slideshow_pager'),
       '#pager_image_style'    => $this->getSetting('slideshow_pager_image_style'),
       //'#carousel_image_style' => $this->getSetting('slideshow_carousel_image_style'),
-      '#slideshow_id'         => $slideshow_count,
+      '#slideshow_id'         => $slideshow_count, 
+      '#check' => 'field_collection',
       //'#carousel_skin'        => $this->getSetting('slideshow_carousel_skin'),
     );
     $controls = array(
