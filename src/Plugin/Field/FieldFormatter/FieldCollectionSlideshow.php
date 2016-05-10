@@ -553,7 +553,8 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       }
     if($this->getSetting('slideshow_pager') == 'image'){
       $target_id = $item->getFieldCollectionItem()->get($image_field)->first()->getValue()['target_id'];
-      $file = File::load($target_id)->getFileUri();               
+      $file = File::load($target_id)->getFileUri(); 
+     // kint(File::load($target_id)->getFileUri());              
       $item->set('fc_thumbnail_path',$file);      
     }
     }
@@ -566,6 +567,7 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       //'#carousel_image_style' => $this->getSetting('slideshow_carousel_image_style'),
       '#slideshow_id'         => $slideshow_count, 
       '#check' => 'field_collection',
+      '#fc_image_field'          => $this->getSetting('image_field'),
       //'#carousel_skin'        => $this->getSetting('slideshow_carousel_skin'),
     );
     $controls = array(

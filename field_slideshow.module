@@ -52,6 +52,7 @@ function field_slideshow_theme() {
         'slideshow_id'          => NULL,
         'carousel_skin'         => NULL,
         'check' => NULL,
+        'fc_image_field'        => NULL,
       ),
       'path' => drupal_get_path('module', 'field_slideshow') . '/templates',
       'render element'     => 'field_slideshow_pager',
@@ -173,7 +174,7 @@ function template_preprocess_field_slideshow(&$variables) {
 function template_preprocess_field_slideshow_pager(&$variables) {
 
   $items = $variables['items'];
-
+  $fc_image_field = $variables['fc_image_field'];
   // Add thumbnails pager/carousel if needed
   if (isset($variables['pager']) && ($variables['pager'] == 'image' || $variables['pager'] == 'carousel')) {
 
@@ -192,8 +193,7 @@ function template_preprocess_field_slideshow_pager(&$variables) {
     $thumbnails = array();
     foreach ($items as $num => $item) {
       $thumbnail = array();
-      if(!empty($variables['check'])){die;
-        //kint($item->getValue()['fc_thumbnail_path']) ;die;
+      if(!empty($variables['check'])){
         $thumbnail['path'] =  $item->getValue()['fc_thumbnail_path'];
       }
       else{
@@ -218,12 +218,23 @@ function template_preprocess_field_slideshow_pager(&$variables) {
         $thumbnail['title'] = $item->title;
       }
       // @todo: need to add cache tags in image.
-      $thumbnail_output = array(
+      if(!empty($variables['check'])){
+        $fc_image_item = $item->getFieldCollectionItem()->get($fc_image_field)->first();
+        $thumbnail_output = array(
+        '#theme'           => 'image_formatter',
+        '#item'            => $fc_image_item,
+        '#item_attributes' => $thumbnail['attributes'],
+        '#url'             => "#",
+       );
+      }
+      else{
+        $thumbnail_output = array(
         '#theme'           => 'image_formatter',
         '#item'            => $item,
         '#item_attributes' => $thumbnail['attributes'],
         '#url'             => "#",
-      );
+      );        
+      }
       if ($thumbnail_style) {
         $thumbnail_output['#image_style'] = $thumbnail_style;
       }
