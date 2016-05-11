@@ -421,7 +421,6 @@ class FieldSlideshow extends ImageFormatter {
               }
             break;
             case 'file':
-            kint($item);
               foreach ($files as $file_delta => $file) {
                 $image_uri = $file->getFileUri();
                 $uri = Url::fromUri(file_create_url($image_uri));
