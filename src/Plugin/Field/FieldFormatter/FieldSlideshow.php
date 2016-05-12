@@ -51,11 +51,11 @@ class FieldSlideshow extends ImageFormatter {
       'slideshow_pager_image_style'         => '',
     ) + parent::defaultSettings();
   }
-	/**
+  /**
    * {@inheritdoc}
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
-  	// get image_style and image_link form elements from parent method.
+    // get image_style and image_link form elements from parent method.
     $element = parent::settingsForm($form, $form_state);
     $link_types = array(
       'content' => t('Content'),

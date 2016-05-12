@@ -21,10 +21,17 @@ Compared to Views slideshows, building the slideshow from multiple nodes, this m
 4 - Click the settings wheel in the slideshow-formatted multiple image field to edit advanced settings
 5 - Save! and here you go.
 
+Slideshow with fieldcollection 
+1 - Enable Field Collection at admin/modules
+2 - Create or edit a field Collection's manage display and 
+
+--- KNOWN ISSUES --------------------------------------------------------
+
+--- FUTURE ENCHANCEMENTS ------------------------------------------------
 
 --- AVAILABLE OPTIONS ---------------------------------------------------
 
-Image style
+Image styles
 Caption
 Link
 Transition effect
@@ -39,5 +46,4 @@ Integration with Colorbox.
 
 
 
-Written by Jerome Danthinne
-http://www.grincheux.be
+Written by Deepika

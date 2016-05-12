@@ -11,10 +11,10 @@ use Drupal\Core\Url;
  * Implements hook_schema().
  */
 function field_slideshow_requirements($phase) {
-	$requirements = array();
+  $requirements = array();
 
-	if ($phase == 'runtime') {
-		//$path = libraries_get_path('jquery.cycle');
+  if ($phase == 'runtime') {
+    //$path = libraries_get_path('jquery.cycle');
     $path = '';
     if ($path == '') $path = DRUPAL_ROOT . '/libraries/jquery.cycle';
     if (file_exists($path . '/jquery.cycle.all.min.js') || file_exists($path . '/jquery.cycle.all.js')) {
@@ -25,7 +25,7 @@ function field_slideshow_requirements($phase) {
       );
     }
     else {
-    	$url = Url::fromUri('http://jquery.malsup.com/cycle/download.html');
+      $url = Url::fromUri('http://jquery.malsup.com/cycle/download.html');
       $requirements['field_slideshow_cycle_plugin'] = array(
         'title'       => t('JQuery Cycle plugin'),
         'value'       => t('Not found'),
@@ -33,9 +33,9 @@ function field_slideshow_requirements($phase) {
         'description' => t('You need to download the %name and move the downloaded js file(s) into the %path folder of your server.', array('%name' => \Drupal::l(t('JQuery Cycle plugin'), $url), '%path' => $path)),
       );
     }
-	}
+  }
 
-	$carousel_used = FALSE;
+  $carousel_used = FALSE;
   /*foreach (field_info_instances() as $bundles) {
     foreach ($bundles as $instances) {
       foreach ($instances as $field) {
@@ -49,7 +49,7 @@ function field_slideshow_requirements($phase) {
     }
   }*/
 
-	if ($carousel_used) {
+  if ($carousel_used) {
       $path = '';
       //$path = libraries_get_path('jquery.jcarousel');
       if ($path == '') $path = DRUPAL_ROOT . '/libraries/jquery.jcarousel';
@@ -61,7 +61,7 @@ function field_slideshow_requirements($phase) {
         );
       }
       else {
-      	$url = Url::fromUri('http://sorgalla.com/jcarousel/');
+        $url = Url::fromUri('http://sorgalla.com/jcarousel/');
         $requirements['field_slideshow_jcarousel_plugin'] = array(
           'title'       => t('JCarousel plugin'),
           'value'       => t('Not found'),
@@ -81,7 +81,7 @@ function field_slideshow_requirements($phase) {
       );
     }
     else {
-    	$url = Url::fromUri('https://github.com/desandro/imagesloaded/downloads');
+      $url = Url::fromUri('https://github.com/desandro/imagesloaded/downloads');
       $requirements['field_slideshow_imagesloaded_plugin'] = array(
         'title'       => t('JQuery ImagesLoaded plugin'),
         'value'       => t('Not found'),
@@ -90,5 +90,5 @@ function field_slideshow_requirements($phase) {
       );
     }
 
-	return $requirements;
+  return $requirements;
 }
