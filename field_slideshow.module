@@ -279,7 +279,7 @@ function field_slideshow_colorbox_settings_alter(&$settings, &$style) {
     
     foreach ($formatter_data['content'] as $content) {
       
-      if (isset($content['type']) && $content['type'] == 'slideshow') {
+      if (isset($content['type']) && ($content['type'] == 'slideshow' || $content['type'] == 'field_collection_slideshow')) {
         //print_r($content);exit;
         $content_settings = $content['settings'];
         $colorbox_slideshow = $content_settings['slideshow_colorbox_slideshow'];
