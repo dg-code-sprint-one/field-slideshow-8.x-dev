@@ -1,7 +1,7 @@
 (function($) {
   Drupal.behaviors.field_slideshow = {
     attach: function(context) {
-
+setTimeout(function(){
       for (i in drupalSettings.field_slideshow) {
         var settings = drupalSettings.field_slideshow[i],
           slideshow = $('div.' + i),
@@ -163,6 +163,7 @@
         }
 
       }
+    }, 500);
 
       // Recalculate height for responsive layouts
       var rebuild_max_height = function(context) {
