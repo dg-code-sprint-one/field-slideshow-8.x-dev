@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Contains \Drupal\field_slideshow\Plugin\Field\FieldFormatter\Slideshow.
@@ -299,11 +300,13 @@ class FieldSlideshow extends ImageFormatter {
     if(isset($image_link_setting) && $image_link_setting == 'colorbox') {
       $link_type_message = t('Link to: @link', array('@link' => $this->getSetting('image_link')));
       $link_type_message .= ' (';
+
       $colorbox_img_style_settings = $this->getSetting('slideshow_colorbox_image_style');
-      if (isset($colorbox_img_style_settings)) {
+      if (!empty($colorbox_img_style_settings)) {
         $link_type_message .= t('Image style: @style', array('@style' => $image_styles[$this->getSetting('slideshow_colorbox_image_style')]));
       }
       else $link_type_message .=  t('Original image');
+
       $colorbox_slideshow_settings = $this->getSetting('slideshow_colorbox_slideshow');
       if (isset($colorbox_slideshow_settings)) {
         $colorbox_slideshow = array(
@@ -345,6 +348,7 @@ class FieldSlideshow extends ImageFormatter {
     $slideshow_controls = $this->getSetting('slideshow_controls');
     $slideshow_pause = $this->getSetting('slideshow_pause');
     $slideshow_start_on_hover = $this->getSetting('slideshow_start_on_hover');
+
     if (isset($slideshow_controls_pause) && $slideshow_controls_pause ) $pause_button_text = " " . t("(with play/pause)");
     if (isset($slideshow_controls) && $slideshow_controls) $summary[] = t('Create prev/next controls') . $pause_button_text;
     if (isset($slideshow_pause) && $slideshow_pause) $summary[] = t('Pause on hover');
@@ -429,39 +433,42 @@ class FieldSlideshow extends ImageFormatter {
               }
             break;
             case 'colorbox': 
-              $attrib = array();     
+              $attrib = array();
+
               // check if we need a thumbnail and change the link
-              if ($this->getSetting('slideshow_colorbox_image_style') != '') {
-                $entity = $item->getEntity();
-                foreach ($files as $file_delta => $file) {
-                  $image_uri = $file->getFileUri();
-                  $uri = Url::fromUri(file_create_url($image_uri));
-                  $uri = !empty($uri) ? $uri : '';
+              $entity = $item->getEntity();
+              foreach ($files as $file_delta => $file) {
+                $image_uri = $file->getFileUri();
+                $uri = Url::fromUri(file_create_url($image_uri));
+                $uri = !empty($uri) ? $uri : '';
+                if ($this->getSetting('slideshow_colorbox_image_style') != '') {
                   $uri = ImageStyle::load($this->getSetting('slideshow_colorbox_image_style'))->buildUrl($image_uri);
                   $attrib['uri'] = $uri;
-                  //add correct attributes
-                  $attrib['attributes'] = array(
-                      'class' => array('colorbox'),
-                      'rel'   => 'field-slideshow[' . 'nid' . '-' . $entity->id() . ']',
-                  );
-                  if ($this->getSetting('slideshow_caption') != ''  && isset($items[$file_delta]->getValue()['caption']))
-                    $attrib['attributes']['title'] = $items[$file_delta]->getValue()['caption'];
-                 
-                  $colorbox_slideshow = $this->getSetting('slideshow_colorbox_slideshow');
-                  if (isset($colorbox_slideshow) && $colorbox_slideshow != '') {
-                    $attrib['attributes']['class'] = array('colorbox');
-                    $attrib['uri'] .= (strpos($attrib['uri'], '?') === FALSE) ? '?' : '&';
-                    $attrib['uri'] .= 'slideshow=true&slideshowAuto=' . (($this->getSetting('slideshow_colorbox_slideshow') == 'automatic') ? 'true':'false') . '&slideshowSpeed=' . $this->getSetting('slideshow_colorbox_slideshow_speed') . '&speed=' . $this->getSetting('slideshow_colorbox_speed') . '&transition=' . $this->getSetting('slideshow_colorbox_transition');
-                  }
-                  $items[$file_delta]->set($path, $attrib);
+                } else {
+                  $attrib['uri'] = $uri->getUri();
                 }
+                //add correct attributes
+                $attrib['attributes'] = array(
+                    'class' => array('colorbox'),
+                    'rel'   => 'field-slideshow[' . 'nid' . '-' . $entity->id() . ']',
+                );
+                if ($this->getSetting('slideshow_caption') != ''  && isset($items[$file_delta]->getValue()['caption']))
+                  $attrib['attributes']['title'] = $items[$file_delta]->getValue()['caption'];
+               
+                $colorbox_slideshow = $this->getSetting('slideshow_colorbox_slideshow');
+                if (!empty($colorbox_slideshow)) {
+                  $attrib['attributes']['class'] = array('colorbox');
+                  $attrib['uri'] .= (strpos($attrib['uri'], '?') === FALSE) ? '?' : '&';
+                  $attrib['uri'] .= 'slideshow=true&slideshowAuto=' . (($this->getSetting('slideshow_colorbox_slideshow') == 'automatic') ? 'true':'false') . '&slideshowSpeed=' . $this->getSetting('slideshow_colorbox_slideshow_speed') . '&speed=' . $this->getSetting('slideshow_colorbox_speed') . '&transition=' . $this->getSetting('slideshow_colorbox_transition');
+                }
+                $items[$file_delta]->set($path, $attrib);
               }
             break;
           }
         }
       }
     }
-      
+
     $pager = array(
       '#theme'                => 'field_slideshow_pager',
       '#items'                => $items,
