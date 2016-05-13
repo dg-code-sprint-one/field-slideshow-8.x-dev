@@ -1,5 +1,3 @@
-
-
 --- README  -------------------------------------------------------------
 
 Field Slideshow
@@ -23,11 +21,17 @@ Compared to Views slideshows, building the slideshow from multiple nodes, this m
 
 Slideshow with fieldcollection 
 1 - Enable Field Collection at admin/modules
-2 - Create or edit a field Collection's manage display and 
+2 - Create or edit a content type at /admin/structure/types and add or edit field Collection field which has an image field. Select the format as "Slideshow" and click the settings wheel and set the desired options.
+3 - Choose the field collection image field in the "Image Field" list.
+4 - Assign the appropriate settings for your slideshow
+5 - Update and save the settings. Here you fo slideshow with field collection !!
 
 --- KNOWN ISSUES --------------------------------------------------------
+1 - Media and Image crop not supported
+2 - Colorbox works for Default view mode only
 
 --- FUTURE ENCHANCEMENTS ------------------------------------------------
+1 - Slideshow Jcarousel will be added in future
 
 --- AVAILABLE OPTIONS ---------------------------------------------------
 
@@ -43,7 +47,5 @@ Prev/Next controls
 Pause on hover
 
 Integration with Colorbox.
-
-
 
 Written by Deepika
