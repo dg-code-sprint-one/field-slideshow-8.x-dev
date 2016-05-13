@@ -444,8 +444,18 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
     $caption = $this->getSetting('slideshow_caption');
     $alt = array();
     foreach ($items as $key => $item) {
-      $render_item[] = $item->getFieldCollectionItem()->get($image_field)->view($display_options = array());
+      $render = $item->getFieldCollectionItem()->get($image_field)->first();
+      $render_value['#theme'] = 'image_formatter';
+      $render_value['#label_display'] = 'hidden';
+      $render_value['#url'] = NULL;
+      $render_value['#item'] = $render;
+      $render_value['#image_style'] = $this->getSetting('image_style');
+      $render_value['#item_attributes'] =  array();      
+      $render_item[] = $render_value;
     }
+
+    // kint($render_item);
+    // die;
     static $slideshow_count;
     $slideshow_count = (is_int($slideshow_count)) ? $slideshow_count + 1 : 1;
    // $files = $this->getEntitiesToView($items, $langcode);
