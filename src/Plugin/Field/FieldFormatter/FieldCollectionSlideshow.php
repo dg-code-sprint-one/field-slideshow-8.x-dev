@@ -422,7 +422,7 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       break;
       case 'image':
         $pager_image_message = t('Pager') . ': ' . t('Image') . ' (';
-        if (isset($image_styles[$this->getSetting('slideshow_pager_image_style')])) {
+        if (!empty($image_styles[$this->getSetting('slideshow_pager_image_style')])) {
           $pager_image_message .= t('Image style: @style', array('@style' => $image_styles[$this->getSetting('slideshow_pager_image_style')]));
         }
         else {
@@ -441,6 +441,10 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
   public function viewElements(FieldItemListInterface $items, $langcode) {
 
     $image_field = $this->getSetting('image_field');
+    if ($image_field == '') {
+      drupal_set_message(t('Please choose image field in slideshow option in manage display, Now we displayed Field Collections items options.'),'error');
+      return parent::viewElements($items,$langcode);
+    }
     $caption = $this->getSetting('slideshow_caption');
     $alt = array();
     foreach ($items as $key => $item) {
@@ -453,9 +457,6 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       $render_value['#item_attributes'] =  array();      
       $render_item[] = $render_value;
     }
-
-    // kint($render_item);
-    // die;
     static $slideshow_count;
     $slideshow_count = (is_int($slideshow_count)) ? $slideshow_count + 1 : 1;
    // $files = $this->getEntitiesToView($items, $langcode);
@@ -530,14 +531,18 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
 
               $attrib = array();     
               // check if we need a thumbnail and change the link
-              if ($this->getSetting('slideshow_colorbox_image_style') != '') {        
                 $entity = $item->getEntity();
                 $target_id = $item->getFieldCollectionItem()->get($image_field)->first()->getValue()['target_id'];
                 $file = File::load($target_id)->getFileUri();    
                 $uri = Url::fromUri(file_create_url($file));
                 $uri = !empty($uri) ? $uri : '';  
+              if ($this->getSetting('slideshow_colorbox_image_style') != '') {        
                 $uri = ImageStyle::load($this->getSetting('slideshow_colorbox_image_style'))->buildUrl($file);
                 $attrib['uri'] = $uri;
+              }               
+              else{
+                $attrib['uri'] = $uri->getUri();
+              }
 
                 //add correct attributes
                 $attrib['attributes'] = array(
@@ -556,8 +561,7 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
                 }
                 $file_delta = $item->getName();
                 $items[$file_delta]->set($path, $attrib);
-              }               
-            break;
+          break;
           }
         }
       }
