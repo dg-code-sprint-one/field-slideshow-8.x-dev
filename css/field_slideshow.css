@@ -3,7 +3,9 @@
   max-width: 100%;
 }
 
-.field-slideshow-slide, .field-slideshow-slide a, .field-slideshow-slide img {
+.field-slideshow-slide,
+.field-slideshow-slide a,
+.field-slideshow-slide img {
   max-width: 100%;
   height: auto !important;
   width: auto !important;

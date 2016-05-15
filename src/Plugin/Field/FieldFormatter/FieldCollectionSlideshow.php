@@ -1,24 +1,13 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\field_slideshow\Plugin\Field\FieldFormatter\Slideshow.
- */
-
 namespace Drupal\field_slideshow\Plugin\Field\FieldFormatter;
 
-use Drupal\Core\Config\Entity;
-use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Field\Plugin\Field\FieldFormatter;
 use Drupal\Core\Url;
-use \Drupal\field\Entity\FieldStorageConfig;
-use Drupal\field_collection\Entity\FieldCollectionItem;
 use Drupal\field_collection\Plugin\Field\FieldFormatter\FieldCollectionItemsFormatter;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
-use \InvalidArgumentException;
 
 /**
  * Plugin implementation of the 'slideshow' formatter.
@@ -38,7 +27,7 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
    */
   public static function defaultSettings() {
     return array(
-      'image_field'                         =>'',
+      'image_field'                         => '',
       'image_style'                         => '',
       'image_link'                          => '',
       'slideshow_colorbox_image_style'      => '',
@@ -70,18 +59,17 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
   public function settingsForm(array $form, FormStateInterface $form_state) {
 
     $image_styles = image_style_options(FALSE);
-    // get image_style and image_link form elements from parent method.
+    // Get image_style and image_link form elements from parent method.
     $element = parent::settingsForm($form, $form_state);
-    $entity_type_id = 'node';
     $bundle = $form['#bundle'];
-   
+
     $definitions = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', $bundle);
     foreach ($definitions as $field_name => $field_definition) {
-      if ($field_definition->getType() == 'field_collection') {          
-        $fname = $field_definition->getName();      
+      if ($field_definition->getType() == 'field_collection') {
+        $fname = $field_definition->getName();
       }
-    }  
-    $field_options = $this->field_slideshow_get_fields('image',$bundle,$fname);
+    }
+    $field_options = $this->fieldSlideshowGetFields('image', $bundle, $fname);
     $element['image_field'] = array(
       '#title'         => t('Image Field'),
       '#type'          => 'select',
@@ -113,7 +101,7 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
         ),
       ),
     );
-    if(\Drupal::moduleHandler()->moduleExists('colorbox')) {
+    if (\Drupal::moduleHandler()->moduleExists('colorbox')) {
       $element['image_link']['#options']['colorbox'] = 'Colorbox';
       $element['slideshow_colorbox_image_style'] = array(
         '#title'          => t('Colorbox image style'),
@@ -188,8 +176,8 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       'title'   => t('Title text'),
       'alt'     => t('Alt text'),
     );
-    $caption_add = $this->field_slideshow_get_fields('string_long',$bundle,$fname);
-    $captions = array_merge($captions,$caption_add);
+    $caption_add = $this->fieldSlideshowGetFields('string_long', $bundle, $fname);
+    $captions = array_merge($captions, $caption_add);
     $element['slideshow_caption'] = array(
       '#title'          => t('Caption'),
       '#type'           => 'select',
@@ -210,37 +198,37 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       ),
     );
     $element['slideshow_fx'] = array(
-      '#title'        => t('Transition effect'),
-      '#type'         => 'select',
-      '#default_value'=> $this->getSetting('slideshow_fx'),
-      '#options'      => array(
-        'blindX'      => t('blindX'),
-        'blindY'      => t('blindY'),
-        'blindZ'      => t('blindZ'),
-        'cover'       => t('cover'),
-        'curtainX'    => t('curtainX'),
-        'curtainY'    => t('curtainY'),
-        'fade'        => t('fade'),
-        'fadeZoom'    => t('fadeZoom'),
-        'growX'       => t('growX'),
-        'growY'       => t('growY'),
-        'scrollUp'    => t('scrollUp'),
-        'scrollDown'  => t('scrollDown'),
-        'scrollLeft'  => t('scrollLeft'),
-        'scrollRight' => t('scrollRight'),
-        'scrollHorz'  => t('scrollHorz'),
-        'scrollVert'  => t('scrollVert'),
-        'shuffle'     => t('shuffle'),
-        'slideX'      => t('slideX'),
-        'slideY'      => t('slideY'),
-        'toss'        => t('toss'),
-        'turnUp'      => t('turnUp'),
-        'turnDown'    => t('turnDown'),
-        'turnLeft'    => t('turnLeft'),
-        'turnRight'   => t('turnRight'),
-        'uncover'     => t('uncover'),
-        'wipe'        => t('wipe'),
-        'zoom'        => t('zoom'),
+      '#title'         => t('Transition effect'),
+      '#type'          => 'select',
+      '#default_value' => $this->getSetting('slideshow_fx'),
+      '#options'       => array(
+        'blindX'       => t('blindX'),
+        'blindY'       => t('blindY'),
+        'blindZ'       => t('blindZ'),
+        'cover'        => t('cover'),
+        'curtainX'     => t('curtainX'),
+        'curtainY'     => t('curtainY'),
+        'fade'         => t('fade'),
+        'fadeZoom'     => t('fadeZoom'),
+        'growX'        => t('growX'),
+        'growY'        => t('growY'),
+        'scrollUp'     => t('scrollUp'),
+        'scrollDown'   => t('scrollDown'),
+        'scrollLeft'   => t('scrollLeft'),
+        'scrollRight'  => t('scrollRight'),
+        'scrollHorz'   => t('scrollHorz'),
+        'scrollVert'   => t('scrollVert'),
+        'shuffle'      => t('shuffle'),
+        'slideX'       => t('slideX'),
+        'slideY'       => t('slideY'),
+        'toss'         => t('toss'),
+        'turnUp'       => t('turnUp'),
+        'turnDown'     => t('turnDown'),
+        'turnLeft'     => t('turnLeft'),
+        'turnRight'    => t('turnRight'),
+        'uncover'      => t('uncover'),
+        'wipe'         => t('wipe'),
+        'zoom'         => t('zoom'),
       ),
     );
     $element['slideshow_speed'] = array(
@@ -287,7 +275,7 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
     $element['slideshow_controls_position'] = array(
       '#title'          => t('Prev/next controls position'),
       '#type'           => 'select',
-      '#options'        => array('before' => 'Before', 'after' => 'After'),
+      '#options'        => array('before' => t('Before'), 'after' => t('After')),
       '#default_value'  => $this->getSetting('slideshow_controls_position'),
       '#states' => array(
         'visible' => array(
@@ -308,14 +296,14 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
     $element['slideshow_pager'] = array(
       '#title'          => t('Pager'),
       '#type'           => 'select',
-      '#options'        => array('number' => 'Slide number', 'image' => 'Image'),
+      '#options'        => array('number' => t('Slide number'), 'image' => t('Image')),
       '#empty_option'   => t('None'),
       '#default_value'  => $this->getSetting('slideshow_pager'),
     );
     $element['slideshow_pager_position'] = array(
       '#title'          => t('Pager position'),
       '#type'           => 'select',
-      '#options'        => array('before' => 'Before', 'after' => 'After'),
+      '#options'        => array('before' => t('Before'), 'after' => t('After')),
       '#default_value'  => $this->getSetting('slideshow_pager_position'),
       '#states' => array(
         'invisible' => array(
@@ -343,26 +331,25 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
    */
   public function settingsSummary() {
 
-    // get summary of image_style and image_link from parent method.
+    // Get summary of image_style and image_link from parent method.
     $summary = parent::settingsSummary();
 
     $image_styles = image_style_options(FALSE);
     // Unset possible 'No defined styles' option.
     unset($image_styles['']);
-    // Styles could be lost because of enabled/disabled modules that defines
-    // their styles in code.
-    $image_style_setting = $this->getSetting('image_style');
 
-    //Colorbox
+    // Colorbox!
     $image_link_setting = $this->getSetting('image_link');
-    if(isset($image_link_setting) && $image_link_setting == 'colorbox') {
+    if (isset($image_link_setting) && $image_link_setting == 'colorbox') {
       $link_type_message = t('Link to: @link', array('@link' => $this->getSetting('image_link')));
       $link_type_message .= ' (';
       $colorbox_img_style_settings = $this->getSetting('slideshow_colorbox_image_style');
       if (isset($colorbox_img_style_settings)) {
         $link_type_message .= t('Image style: @style', array('@style' => $image_styles[$this->getSetting('slideshow_colorbox_image_style')]));
       }
-      else $link_type_message .=  t('Original image');
+      else {
+        $link_type_message .= t('Original image');
+      }
       $colorbox_slideshow_settings = $this->getSetting('slideshow_colorbox_slideshow');
       if (isset($colorbox_slideshow_settings)) {
         $colorbox_slideshow = array(
@@ -377,7 +364,7 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       $link_type_message .= ')';
       $summary[] = $link_type_message;
     }
-    
+
     $caption_types = array(
       'title' => t('Title text'),
       'alt'   => t('Alt text'),
@@ -388,7 +375,9 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
     if (isset($caption_types[$caption_types_settings])) {
       $caption_message = t('Caption: @caption', array('@caption' => $caption_types[$caption_types_settings]));
       $link_types_settings = $this->getSetting('slideshow_caption_link');
-      if (isset($link_types[$link_types_settings])) $caption_message .= ' (' . t('Link to: @link', array('@link' => $link_types[$link_types_settings])) . ')';
+      if (isset($link_types[$link_types_settings])) {
+        $caption_message .= ' (' . t('Link to: @link', array('@link' => $link_types[$link_types_settings])) . ')';
+      }
       $summary[] = $caption_message;
     }
 
@@ -411,15 +400,24 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
     $slideshow_controls = $this->getSetting('slideshow_controls');
     $slideshow_pause = $this->getSetting('slideshow_pause');
     $slideshow_start_on_hover = $this->getSetting('slideshow_start_on_hover');
-    if (isset($slideshow_controls_pause) && $slideshow_controls_pause ) $pause_button_text = " " . t("(with play/pause)");
-    if (isset($slideshow_controls) && $slideshow_controls) $summary[] = t('Create prev/next controls') . $pause_button_text;
-    if (isset($slideshow_pause) && $slideshow_pause) $summary[] = t('Pause on hover');
-    if (isset($slideshow_start_on_hover) && $slideshow_start_on_hover) $summary[] = t('Activate on hover');
+    if (isset($slideshow_controls_pause) && $slideshow_controls_pause) {
+      $pause_button_text = " " . t("(with play/pause)");
+    }
+    if (isset($slideshow_controls) && $slideshow_controls) {
+      $summary[] = t('Create prev/next controls') . $pause_button_text;
+    }
+    if (isset($slideshow_pause) && $slideshow_pause) {
+      $summary[] = t('Pause on hover');
+    }
+    if (isset($slideshow_start_on_hover) && $slideshow_start_on_hover) {
+      $summary[] = t('Activate on hover');
+    }
 
     switch ($this->getSetting('slideshow_pager')) {
       case 'number':
         $summary[] = t('Pager') . ': ' . t('Slide number');
-      break;
+        break;
+
       case 'image':
         $pager_image_message = t('Pager') . ': ' . t('Image') . ' (';
         if (!empty($image_styles[$this->getSetting('slideshow_pager_image_style')])) {
@@ -430,7 +428,7 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
         }
         $pager_image_message .= ')';
         $summary[] = $pager_image_message;
-      break;
+        break;
     }
     return $summary;
   }
@@ -442,11 +440,10 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
 
     $image_field = $this->getSetting('image_field');
     if ($image_field == '') {
-      drupal_set_message(t('Please choose image field in slideshow option in manage display, Now we displayed Field Collections items options.'),'error');
-      return parent::viewElements($items,$langcode);
+      drupal_set_message(t('Please choose image field in slideshow option in manage display, Now we displayed Field Collections items options.'), 'error');
+      return parent::viewElements($items, $langcode);
     }
     $caption = $this->getSetting('slideshow_caption');
-    $alt = array();
     foreach ($items as $key => $item) {
       $render = $item->getFieldCollectionItem()->get($image_field)->first();
       $render_value['#theme'] = 'image_formatter';
@@ -454,14 +451,13 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       $render_value['#url'] = NULL;
       $render_value['#item'] = $render;
       $render_value['#image_style'] = $this->getSetting('image_style');
-      $render_value['#item_attributes'] =  array();      
+      $render_value['#item_attributes'] = array();
       $render_item[] = $render_value;
     }
     static $slideshow_count;
     $slideshow_count = (is_int($slideshow_count)) ? $slideshow_count + 1 : 1;
-   // $files = $this->getEntitiesToView($items, $langcode);
 
-    // Check plugins
+    // Check plugins.
     if (\Drupal::moduleHandler()->moduleExists('libraries')) {
       if (!file_exists(DRUPAL_ROOT . '/libraries/jquery.cycle/jquery.cycle.all.min.js') && !file_exists(DRUPAL_ROOT . '/libraries/jquery.cycle/jquery.cycle.all.js')) {
         $url = Url::fromRoute('system.status');
@@ -474,103 +470,109 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
     }
 
     $elements = array();
-    $entity = array();  
-    $files = array();
+    $entity = array();
     $links = array(
       'image_link'              => 'path',
       'slideshow_caption_link'  => 'caption_path',
     );
 
-    // Loop through required links (because image and caption can have different links).
+    // Loop through required links (because image and
+    // caption can have different links).
     foreach ($items as $delta => $item) {
       $uri = array();
-      // Set Image caption
+
+      // Set Image caption.
       if ($this->getSetting('slideshow_caption') != '') {
         $caption_settings = $this->getSetting('slideshow_caption');
         if ($caption_settings == 'title') {
-          $item_settings[$delta]['caption'] = $item->getFieldCollectionItem()->get($image_field)->getValue($include_computed = false)[0]['title'];
-        } 
+          $item_settings[$delta]['caption'] = $item->getFieldCollectionItem()->get($image_field)->getValue()[0]['title'];
+        }
         elseif ($caption_settings == 'alt') {
-          $item_settings[$delta]['caption'] =$item->getFieldCollectionItem()->get($image_field)->getValue($include_computed = false)[0]['alt'];
+          $item_settings[$delta]['caption'] = $item->getFieldCollectionItem()->get($image_field)->getValue()[0]['alt'];
         }
         else {
-          $item_settings[$delta]['caption'] = $item->getFieldCollectionItem()->get($caption)->getValue($include_computed = false)[0]['value'];
+          $item_settings[$delta]['caption'] = $item->getFieldCollectionItem()->get($caption)->getValue()[0]['value'];
         }
-        $item->set('caption',$item_settings[$delta]['caption']);
+        $item->set('caption', $item_settings[$delta]['caption']);
       }
-      // Set Image and Caption Link
+
+      // Set Image and Caption Link.
       foreach ($links as $setting => $path) {
         if ($this->getSetting($setting) != '') {
           switch ($this->getSetting($setting)) {
-            case 'content':       
-              $entity = $item->getEntity();               
+            case 'content':
+              $entity = $item->getEntity();
               if (!$entity->isNew()) {
-                $uri = $entity->urlInfo();                
-                $uri = !empty($uri) ? $uri : '';                         
+                $uri = $entity->urlInfo();
+                $uri = !empty($uri) ? $uri : '';
                 if ($setting == 'image_link') {
-                 $item->set('fc_path',$uri);
+                  $item->set('fc_path', $uri);
                 }
-                elseif ($setting == 'slideshow_caption_link'){
-                  $item->set($path,$uri);
+                elseif ($setting == 'slideshow_caption_link') {
+                  $item->set($path, $uri);
                 }
               }
-            break;
+              break;
+
             case 'file':
               $target_id = $item->getFieldCollectionItem()->get($image_field)->first()->getValue()['target_id'];
-              $file = File::load($target_id)->getFileUri();    
+              $file = File::load($target_id)->getFileUri();
               $uri = Url::fromUri(file_create_url($file));
-              $uri = !empty($uri) ? $uri : '';  
-              if ($setting == 'image_link') {   
-                $item->set('fc_file_path',$uri);                                       
+              $uri = !empty($uri) ? $uri : '';
+              if ($setting == 'image_link') {
+                $item->set('fc_file_path', $uri);
               }
-              elseif ($setting == 'slideshow_caption_link'){
-                $item->set($path,$uri);
-              }              
-            break;
-              case 'colorbox': 
+              elseif ($setting == 'slideshow_caption_link') {
+                $item->set($path, $uri);
+              }
+              break;
 
-              $attrib = array();     
-              // check if we need a thumbnail and change the link
-                $entity = $item->getEntity();
-                $target_id = $item->getFieldCollectionItem()->get($image_field)->first()->getValue()['target_id'];
-                $file = File::load($target_id)->getFileUri();    
-                $uri = Url::fromUri(file_create_url($file));
-                $uri = !empty($uri) ? $uri : '';  
-              if ($this->getSetting('slideshow_colorbox_image_style') != '') {        
+            case 'colorbox':
+              $attrib = array();
+
+              // Check if we need a thumbnail and change the link.
+              $entity = $item->getEntity();
+              $target_id = $item->getFieldCollectionItem()->get($image_field)->first()->getValue()['target_id'];
+              $file = File::load($target_id)->getFileUri();
+              $uri = Url::fromUri(file_create_url($file));
+              $uri = !empty($uri) ? $uri : '';
+              if ($this->getSetting('slideshow_colorbox_image_style') != '') {
                 $uri = ImageStyle::load($this->getSetting('slideshow_colorbox_image_style'))->buildUrl($file);
                 $attrib['uri'] = $uri;
-              }               
-              else{
+              }
+              else {
                 $attrib['uri'] = $uri->getUri();
               }
 
-                //add correct attributes
-                $attrib['attributes'] = array(
-                    'class' => array('colorbox'),
-                    'rel'   => 'field-collection-slideshow[' . 'nid' . '-' . $entity->id() . ']',
-                );
+              // Add correct attributes.
+              $attrib['attributes'] = array(
+                'class' => array('colorbox'),
+                'rel'   => 'field-collection-slideshow[' . 'nid' . '-' . $entity->id() . ']',
+              );
 
-                if ($this->getSetting('slideshow_caption') != ''  &&  isset($item_settings[$delta]['caption']))
-                  $attrib['attributes']['title'] =  $item_settings[$delta]['caption'];                 
-                $colorbox_slideshow = $this->getSetting('slideshow_colorbox_slideshow');
+              if ($this->getSetting('slideshow_caption') != '' && isset($item_settings[$delta]['caption'])) {
+                $attrib['attributes']['title'] = $item_settings[$delta]['caption'];
+              }
 
-                if (isset($colorbox_slideshow) && $colorbox_slideshow != '') {
-                  $attrib['attributes']['class'] = array('colorbox');
-                  $attrib['uri'] .= (strpos($attrib['uri'], '?') === FALSE) ? '?' : '&';
-                  $attrib['uri'] .= 'slideshow=true&slideshowAuto=' . (($this->getSetting('slideshow_colorbox_slideshow') == 'automatic') ? 'true':'false') . '&slideshowSpeed=' . $this->getSetting('slideshow_colorbox_slideshow_speed') . '&speed=' . $this->getSetting('slideshow_colorbox_speed') . '&transition=' . $this->getSetting('slideshow_colorbox_transition');
-                }
-                $file_delta = $item->getName();
-                $items[$file_delta]->set($path, $attrib);
-          break;
+              $colorbox_slideshow = $this->getSetting('slideshow_colorbox_slideshow');
+
+              if (isset($colorbox_slideshow) && $colorbox_slideshow != '') {
+                $attrib['attributes']['class'] = array('colorbox');
+                $attrib['uri'] .= (strpos($attrib['uri'], '?') === FALSE) ? '?' : '&';
+                $attrib['uri'] .= 'slideshow=true&slideshowAuto=' . (($this->getSetting('slideshow_colorbox_slideshow') == 'automatic') ? 'true' : 'false') . '&slideshowSpeed=' . $this->getSetting('slideshow_colorbox_slideshow_speed') . '&speed=' . $this->getSetting('slideshow_colorbox_speed') . '&transition=' . $this->getSetting('slideshow_colorbox_transition');
+              }
+              $file_delta = $item->getName();
+              $items[$file_delta]->set($path, $attrib);
+              break;
           }
         }
       }
-    if($this->getSetting('slideshow_pager') == 'image'){
-      $target_id = $item->getFieldCollectionItem()->get($image_field)->first()->getValue()['target_id'];
-      $file = File::load($target_id)->getFileUri(); 
-     // kint(File::load($target_id)->getFileUri());              
-      $item->set('fc_thumbnail_path',$file);      
-    }
+
+      if ($this->getSetting('slideshow_pager') == 'image') {
+        $target_id = $item->getFieldCollectionItem()->get($image_field)->first()->getValue()['target_id'];
+        $file = File::load($target_id)->getFileUri();
+        $item->set('fc_thumbnail_path', $file);
+      }
     }
 
     $pager = array(
@@ -578,17 +580,15 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       '#items'                => $items,
       '#pager'                => $this->getSetting('slideshow_pager'),
       '#pager_image_style'    => $this->getSetting('slideshow_pager_image_style'),
-      //'#carousel_image_style' => $this->getSetting('slideshow_carousel_image_style'),
-      '#slideshow_id'         => $slideshow_count, 
+      '#slideshow_id'         => $slideshow_count,
       '#check' => 'field_collection',
       '#fc_image_field'          => $this->getSetting('image_field'),
-      //'#carousel_skin'        => $this->getSetting('slideshow_carousel_skin'),
     );
     $controls = array(
       '#theme'                => 'field_slideshow_controls',
       '#slideshow_id'         => $slideshow_count,
       '#controls_pause'       => $this->getSetting('slideshow_controls_pause'),
-    );       
+    );
     $elements[] = array(
       '#theme'                => 'field_slideshow',
       '#items'                => $items,
@@ -607,14 +607,7 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
         'timeout'              => $this->getSetting('slideshow_timeout'),
         'pause'                => $this->getSetting('slideshow_pause'),
         'start_on_hover'       => $this->getSetting('slideshow_start_on_hover'),
-        // 'carousel_visible'     => $this->getSetting('slideshow_carousel_visible'),
-        // 'carousel_scroll'      => $this->getSetting('slideshow_carousel_scroll'),
-        // 'carousel_speed'       => $this->getSetting('slideshow_carousel_speed'),
-        // 'carousel_vertical'    => $this->getSetting('slideshow_carousel_vertical'),
-        // 'carousel_circular'    => $this->getSetting('slideshow_carousel_circular'),
-        // 'carousel_follow'      => $this->getSetting('slideshow_carousel_follow'),
-        // 'carousel_skin'        => $this->getSetting('slideshow_carousel_skin'),
-        // Need to access the following variables in js too
+        // Need to access the following variables in js too.
         'pager'                => $this->getSetting('slideshow_pager'),
         'controls'             => $this->getSetting('slideshow_controls') === 1 ? $controls : array(),
       ),
@@ -622,23 +615,28 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
     return $elements;
   }
 
-  public function field_slideshow_get_fields($support_type,$bundle,$field_name){
-    $links = array();
-    $map = \Drupal::entityManager()->getFieldMap();
-    $map = $map['field_collection_item'];
+  /**
+   * Helper function.
+   */
+  public function fieldSlideshowGetFields($support_type, $bundle, $field_name) {
+    $link  = array();
+    $map   = \Drupal::entityManager()->getFieldMap();
+    $map   = $map['field_collection_item'];
     $field_machinename = array();
-    foreach($map as $key => $value){
-      if($value['type'] == $support_type){
-        $field_machinename[$key] =$value['bundles'];
+
+    foreach ($map as $key => $value) {
+      if ($value['type'] == $support_type) {
+        $field_machinename[$key] = $value['bundles'];
       }
     }
     foreach ($field_machinename as $key => $values) {
       foreach ($values as $innerkey => $innervalue) {
-      if ($innerkey == $field_name) {
-        $link[$key] = $key;
-      } 
-      }         
+        if ($innerkey == $field_name) {
+          $link[$key] = $key;
+        }
+      }
     }
     return $link;
   }
+
 }
