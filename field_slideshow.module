@@ -130,8 +130,8 @@ function template_preprocess_field_slideshow(&$variables) {
       }
       $variables['image'][$num]['#item_attributes'] = array_merge(
         $variables['image'][$num]['#item_attributes'], array(
-          'class' => 'field-slideshow-image field-slideshow-image-' . (1 + $num),
-        ),
+          'class' => 'field-slideshow-image field-slideshow-image-' . (1 + $num)
+        )
       );
     }
     elseif (!empty($item->getValue()['fc_file_path'])) {
