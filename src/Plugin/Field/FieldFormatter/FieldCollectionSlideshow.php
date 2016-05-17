@@ -64,7 +64,7 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
     $bundle = $form['#bundle'];
 
     $definitions = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', $bundle);
-    foreach ($definitions as $field_name => $field_definition) {
+    foreach ($definitions as $field_definition) {
       if ($field_definition->getType() == 'field_collection') {
         $fname = $field_definition->getName();
       }
@@ -370,13 +370,18 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       'alt'   => t('Alt text'),
     );
 
+    $link_types = array(
+      'content' => t('Content'),
+      'file' => t('File'),
+    );
+
     // Display this setting only if there's a caption.
     $caption_types_settings = $this->getSetting('slideshow_caption');
     if (isset($caption_types[$caption_types_settings])) {
       $caption_message = t('Caption: @caption', array('@caption' => $caption_types[$caption_types_settings]));
       $link_types_settings = $this->getSetting('slideshow_caption_link');
       if (isset($link_types[$link_types_settings])) {
-        $caption_message .= ' (' . t('Link to: @link', array('@link' => $link_types[$link_types_settings])) . ')';
+        $caption_message .= t('(Link to: @link)', array('@link' => $link_types[$link_types_settings]));
       }
       $summary[] = $caption_message;
     }
@@ -415,11 +420,11 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
 
     switch ($this->getSetting('slideshow_pager')) {
       case 'number':
-        $summary[] = t('Pager') . ': ' . t('Slide number');
+        $summary[] = t('Pager: Slide number');
         break;
 
       case 'image':
-        $pager_image_message = t('Pager') . ': ' . t('Image') . ' (';
+        $pager_image_message = t('Pager: Image (');
         if (!empty($image_styles[$this->getSetting('slideshow_pager_image_style')])) {
           $pager_image_message .= t('Image style: @style', array('@style' => $image_styles[$this->getSetting('slideshow_pager_image_style')]));
         }
@@ -444,7 +449,7 @@ class FieldCollectionSlideshow extends FieldCollectionItemsFormatter {
       return parent::viewElements($items, $langcode);
     }
     $caption = $this->getSetting('slideshow_caption');
-    foreach ($items as $key => $item) {
+    foreach ($items as $item) {
       $render = $item->getFieldCollectionItem()->get($image_field)->first();
       $render_value['#theme'] = 'image_formatter';
       $render_value['#label_display'] = 'hidden';

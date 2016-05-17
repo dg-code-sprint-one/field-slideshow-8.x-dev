@@ -113,7 +113,6 @@ function template_preprocess_field_slideshow(&$variables) {
   $field_slideshow_zebra = 'odd';
   $variables['slides_max_width'] = 0;
   $variables['slides_max_height'] = 0;
-  $slide_theme = (isset($variables['breakpoints']) && isset($variables['breakpoints']['mapping']) && !empty($variables['breakpoints']['mapping'])) ? 'picture' : 'image_style';
   $variables['slide'] = array();
   $variables['slides_max_width'] = 0;
   $variables['slides_max_height'] = 0;
@@ -269,7 +268,6 @@ function field_slideshow_colorbox_settings_alter(&$settings, &$style) {
   $node = \Drupal::request()->attributes->get('node');
   if ($node) {
     $type = $node->getType();
-    $mode = \Drupal::service('entity_display.repository')->getViewModes('node');
     $config_entity_name = 'core.entity_view_display.node.' . $type . '.default';
     $query = db_select('config', 'c');
     $result = $query->fields('c')
